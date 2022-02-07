@@ -12,10 +12,15 @@ const Home = ({navigation}) => {
         <Button
           text={'Host Room'}
           onPress={() => {
-            navigation.navigate('Room');
+            navigation.navigate('Room', {isHost: true});
           }}
         />
-        <Button text={'Join Room'} onPress={() => {}} />
+        <Button
+          text={'Join Room'}
+          onPress={() => {
+            navigation.navigate('Room', {isHost: false});
+          }}
+        />
       </View>
     </SafeAreaView>
   );

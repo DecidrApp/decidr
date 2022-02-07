@@ -1,21 +1,37 @@
-import React from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
+import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 import Button from '../components/atoms/Button';
+import Suggestion from '../components/atoms/Suggestion';
 import COLORS from '../styles/colors';
 
-const Room = ({navigation}) => {
+const Room = ({navigation, route}) => {
+  const [roomCode] = useState('x9z6y');
+  const [numParticipants] = useState(1);
+
   return (
     <SafeAreaView style={[styles.background]}>
-      <View>
-        <Text style={[styles.title]}>{'In Room'}</Text>
+      <ScrollView>
+        <Text style={[styles.roomCode]}>{'Room Code: ' + roomCode}</Text>
+        <Text style={[styles.participants]}>
+          {String(numParticipants) + ' participants'}
+        </Text>
+
+        <Suggestion text={'Indian'} suggestedBy={'Joe Zlonicky'} />
 
         <Button
-          text={'Leave'}
+          text={'Add Suggestion'}
           onPress={() => {
             navigation.navigate('Home');
           }}
         />
-      </View>
+
+        <Button
+          text={route.params.isHost ? 'Close Room' : 'Leave Room'}
+          onPress={() => {
+            navigation.navigate('Home');
+          }}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -24,14 +40,20 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     flexGrow: 10,
-    paddingTop: '20%',
+    paddingTop: '10%',
     paddingLeft: '10%',
     paddingRight: '10%',
     backgroundColor: COLORS.BACKGROUND,
   },
-  title: {
-    fontSize: 48,
+  roomCode: {
+    fontSize: 32,
     fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 5,
+    color: COLORS.WHITE,
+  },
+  participants: {
+    fontSize: 24,
     textAlign: 'center',
     marginBottom: 50,
     color: COLORS.WHITE,
