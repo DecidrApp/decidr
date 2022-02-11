@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {SafeAreaView, ScrollView, StyleSheet, Text} from 'react-native';
 import Button from '../components/atoms/Button';
 import Suggestion from '../components/atoms/Suggestion';
 import COLORS from '../styles/colors';
+import {connect} from 'react-redux';
+import sessionStore from '../redux/sessionStore';
 
-const Room = ({navigation, route}) => {
+const Room = ({navigation}) => {
   const [roomCode] = useState('x9z6y');
   const [numParticipants] = useState(1);
 
@@ -21,12 +23,14 @@ const Room = ({navigation, route}) => {
         <Button
           text={'Add Suggestion'}
           onPress={() => {
-            navigation.navigate('Home');
+            navigation.navigate('AddSuggestions');
           }}
         />
 
         <Button
-          text={route.params.isHost ? 'Close Room' : 'Leave Room'}
+          text={
+            sessionStore.getState().host.isHost ? 'Close Room' : 'Leave Room'
+          }
           onPress={() => {
             navigation.navigate('Home');
           }}

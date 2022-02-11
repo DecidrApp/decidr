@@ -2,6 +2,9 @@ import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import Button from '../components/atoms/Button';
 import COLORS from '../styles/colors';
+import {connect} from 'react-redux';
+import {setIsHost} from '../redux/actions/setIsHost';
+import sessionStore from '../redux/sessionStore';
 
 const Home = ({navigation}) => {
   return (
@@ -12,13 +15,15 @@ const Home = ({navigation}) => {
         <Button
           text={'Host Room'}
           onPress={() => {
-            navigation.navigate('Room', {isHost: true});
+            sessionStore.dispatch(setIsHost(true));
+            navigation.navigate('Room');
           }}
         />
         <Button
           text={'Join Room'}
           onPress={() => {
-            navigation.navigate('Room', {isHost: false});
+            sessionStore.dispatch(setIsHost(false));
+            navigation.navigate('Room');
           }}
         />
       </View>
