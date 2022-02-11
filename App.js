@@ -6,7 +6,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import Home from './src/screens/Home';
 import Room from './src/screens/Room';
-import AddSuggestions from './src/screens/AddSuggestions';
+import Suggest from './src/screens/Suggest';
 import sessionStore from './src/redux/sessionStore';
 import {Provider} from 'react-redux';
 
@@ -28,8 +28,8 @@ const App: () => Node = () => {
             options={{headerShown: false, animation: 'none'}}
           />
           <Stack.Screen
-            name="AddSuggestions"
-            component={AddSuggestions}
+            name="Suggest"
+            component={Suggest}
             options={{headerShown: false, animation: 'none'}}
           />
         </Stack.Navigator>

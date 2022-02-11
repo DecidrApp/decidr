@@ -5,10 +5,13 @@ import Suggestion from '../components/atoms/Suggestion';
 import COLORS from '../styles/colors';
 import {connect} from 'react-redux';
 import sessionStore from '../redux/sessionStore';
+import {useIsFocused} from '@react-navigation/native';
+import {resetSuggestions} from '../redux/actions/resetSuggestions';
 
 const Room = ({navigation}) => {
   const [roomCode] = useState('x9z6y');
   const [numParticipants] = useState(1);
+  const isFocused = useIsFocused(); // Force re-render
 
   return (
     <SafeAreaView style={[styles.background]}>
@@ -18,20 +21,25 @@ const Room = ({navigation}) => {
           {String(numParticipants) + ' participants'}
         </Text>
 
-        <Suggestion text={'Indian'} suggestedBy={'Joe Zlonicky'} />
+        {sessionStore.getState().suggestions.map(suggestion => (
+          <Suggestion
+            text={suggestion}
+            key={suggestion}
+            suggestedBy={'Joe Zlonicky'}
+          />
+        ))}
 
         <Button
           text={'Add Suggestion'}
           onPress={() => {
-            navigation.navigate('AddSuggestions');
+            navigation.navigate('Suggest');
           }}
         />
 
         <Button
-          text={
-            sessionStore.getState().host.isHost ? 'Close Room' : 'Leave Room'
-          }
+          text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
           onPress={() => {
+            sessionStore.dispatch(resetSuggestions());
             navigation.navigate('Home');
           }}
         />

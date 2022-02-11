@@ -2,7 +2,6 @@ import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import Button from '../components/atoms/Button';
 import COLORS from '../styles/colors';
-import {connect} from 'react-redux';
 import {setIsHost} from '../redux/actions/setIsHost';
 import sessionStore from '../redux/sessionStore';
 

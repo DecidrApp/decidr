@@ -1,0 +1,3 @@
+export const SET_IS_HOST = 'SET_IS_HOST';
+export const ADD_SUGGESTIONS = 'ADD_SUGGESTIONS';
+export const RESET_SUGGESTIONS = 'RESET_SUGGESTIONS';
