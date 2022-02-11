@@ -9,6 +9,13 @@ const hostReducer = (state = initialState, action) => {
         ...state,
         isHost: action.payload,
       };
+    case 'SET_LOCATION':
+      return {
+        ...state,
+        granted: action.payload.granted,
+        longitude: action.payload.longitude,
+        latitude: action.payload.latitude,
+      };
     default:
       return state;
   }

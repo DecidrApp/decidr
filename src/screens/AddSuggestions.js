@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, Suspense, Fragment} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, Text} from 'react-native';
 import Button from '../components/atoms/Button';
 import COLORS from '../styles/colors';
-import SelectionButton from '../components/atoms/SelectionButton';
+import SuggestionButtons from '../components/molocules/SuggestionButtons';
 
 const Room = ({navigation, route}) => {
   const [numSelected] = useState(0);
@@ -12,7 +12,10 @@ const Room = ({navigation, route}) => {
       <ScrollView>
         <Text style={[styles.title]}>{'Add Suggestions:'}</Text>
 
-        <SelectionButton text={'Indian'} />
+        {/*<SelectionButton text={'Indian'} />*/}
+        <Suspense fallback={<div>Loading...</div>}>
+          <SuggestionButtons />
+        </Suspense>
 
         <Button
           text={'Add ' + String(numSelected) + ' selected'}
