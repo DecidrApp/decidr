@@ -3,7 +3,6 @@ import {SafeAreaView, ScrollView, StyleSheet, Text} from 'react-native';
 import Button from '../components/atoms/Button';
 import Suggestion from '../components/atoms/Suggestion';
 import COLORS from '../styles/colors';
-import {connect} from 'react-redux';
 import sessionStore from '../redux/sessionStore';
 import {useIsFocused} from '@react-navigation/native';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
@@ -22,17 +21,20 @@ const Room = ({navigation}) => {
         </Text>
 
         {sessionStore.getState().suggestions.map(suggestion => (
-          <Suggestion
-            text={suggestion}
-            key={suggestion}
-            suggestedBy={'Joe Zlonicky'}
-          />
+          <Suggestion text={suggestion} key={suggestion} />
         ))}
 
         <Button
           text={'Add Suggestion'}
           onPress={() => {
             navigation.navigate('Suggest');
+          }}
+        />
+
+        <Button
+          text={'Vote'}
+          onPress={() => {
+            navigation.navigate('Vote');
           }}
         />
 
