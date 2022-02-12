@@ -28,8 +28,11 @@ function callApi(latitude, longitude, search) {
       return {
         id: x?.id,
         name: x?.name,
-        cuisines: x?.cuisines,
-        distance: x?.distance,
+        tags: x?.cuisines,
+        distance:
+          x?.distance?.unit === 'KM'
+            ? x?.distance?.value
+            : x?.distance?.value * 1000,
         imageUrls: x?.imageUrls,
       };
     });
@@ -72,8 +75,8 @@ function callApi(latitude, longitude, search) {
                search - String - Search string to pass to API
 
     Returns: Array[Object] - Each object will contain: name{String},
-                                                       cuisines{Array},
-                                                       distance{Object},
+                                                       tags{Array[String]},
+                                                       distance{Number},
                                                        imageUrls{Object}
  */
 function fetchData(latitude, longitude, search = '') {
