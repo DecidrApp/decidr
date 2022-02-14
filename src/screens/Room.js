@@ -14,7 +14,9 @@ const Room = ({navigation}) => {
 
   return (
     <SafeAreaView style={[styles.background]}>
-      <ScrollView>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}>
         <Text style={[styles.roomCode]}>{'Room Code: ' + roomCode}</Text>
         <Text style={[styles.participants]}>
           {String(numParticipants) + ' participants'}
@@ -54,7 +56,6 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     flexGrow: 10,
-    paddingTop: '10%',
     paddingLeft: '10%',
     paddingRight: '10%',
     backgroundColor: COLORS.BACKGROUND,
@@ -64,6 +65,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 5,
+    paddingTop: '10%',
     color: COLORS.WHITE,
   },
   participants: {

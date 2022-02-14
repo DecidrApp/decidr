@@ -21,6 +21,7 @@ const Suggest = ({navigation, route}) => {
     if (sessionStore.getState().granted) {
       fetchData(lat, long).then(x => {
         // TODO: How many to render? Load on scroll?
+        // TODO: I think this might be causing a memory leak
         setRestaurants(x.slice(0, 5));
       });
     }
