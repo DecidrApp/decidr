@@ -3,7 +3,6 @@ import {SafeAreaView, ScrollView, StyleSheet, Text} from 'react-native';
 import Button from '../components/atoms/Button';
 import Suggestion from '../components/atoms/Suggestion';
 import COLORS from '../styles/colors';
-import {connect} from 'react-redux';
 import sessionStore from '../redux/sessionStore';
 import {useIsFocused} from '@react-navigation/native';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
@@ -15,24 +14,29 @@ const Room = ({navigation}) => {
 
   return (
     <SafeAreaView style={[styles.background]}>
-      <ScrollView>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}>
         <Text style={[styles.roomCode]}>{'Room Code: ' + roomCode}</Text>
         <Text style={[styles.participants]}>
           {String(numParticipants) + ' participants'}
         </Text>
 
         {sessionStore.getState().suggestions.map(suggestion => (
-          <Suggestion
-            text={suggestion}
-            key={suggestion}
-            suggestedBy={'Joe Zlonicky'}
-          />
+          <Suggestion text={suggestion} key={suggestion} />
         ))}
 
         <Button
           text={'Add Suggestion'}
           onPress={() => {
             navigation.navigate('Suggest');
+          }}
+        />
+
+        <Button
+          text={'Vote'}
+          onPress={() => {
+            navigation.navigate('Vote');
           }}
         />
 
@@ -52,7 +56,6 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     flexGrow: 10,
-    paddingTop: '10%',
     paddingLeft: '10%',
     paddingRight: '10%',
     backgroundColor: COLORS.BACKGROUND,
@@ -62,6 +65,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 5,
+    paddingTop: '10%',
     color: COLORS.WHITE,
   },
   participants: {

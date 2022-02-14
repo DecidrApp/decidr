@@ -9,6 +9,8 @@ import Room from './src/screens/Room';
 import Suggest from './src/screens/Suggest';
 import sessionStore from './src/redux/sessionStore';
 import {Provider} from 'react-redux';
+import Vote from "./src/screens/Vote";
+import Result from "./src/screens/Result";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +32,16 @@ const App: () => Node = () => {
           <Stack.Screen
             name="Suggest"
             component={Suggest}
+            options={{headerShown: false, animation: 'none'}}
+          />
+          <Stack.Screen
+            name="Vote"
+            component={Vote}
+            options={{headerShown: false, animation: 'none'}}
+          />
+          <Stack.Screen
+            name="Result"
+            component={Result}
             options={{headerShown: false, animation: 'none'}}
           />
         </Stack.Navigator>

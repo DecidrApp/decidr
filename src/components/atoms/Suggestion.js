@@ -2,10 +2,9 @@ import React from 'react';
 import {Text, StyleSheet, View} from 'react-native';
 import COLORS from '../../styles/colors';
 
-const Suggestion = ({text, suggestedBy}) => (
+const Suggestion = ({text}) => (
   <View style={styles.suggestion}>
     <Text style={styles.text}>{text}</Text>
-    <Text style={styles.suggestedBy}>{'Suggested by ' + suggestedBy}</Text>
   </View>
 );
 
@@ -20,8 +19,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 32,
     color: COLORS.WHITE,
-  },
-  suggestedBy: {
   },
 });
 
