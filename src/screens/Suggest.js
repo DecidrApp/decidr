@@ -7,11 +7,25 @@ import sessionStore from '../redux/sessionStore';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import {connect} from 'react-redux';
 import {setIsHost} from '../redux/actions/setIsHost';
+import {fetchData} from '../apis/SkipTheDishes';
 
 const Suggest = ({navigation, route}) => {
-  const restaurants = ['Indian', 'Thai', 'Pizza', 'Subway'];
+  const [restaurants, setRestaurants] = useState([]);
   const [selected, setSelected] = useState([]);
   const [numSelected, setNumSelected] = useState(0);
+
+  const fetchRestaurants = () => {
+    const long = sessionStore.getState().longitude;
+    const lat = sessionStore.getState().latitude;
+    console.log(long, lat);
+    if (sessionStore.getState().granted) {
+      fetchData(lat, long).then(x => {
+        // TODO: How many to render? Load on scroll?
+        setRestaurants(x.slice(0, 5));
+      });
+    }
+  };
+  fetchRestaurants();
 
   const suggestionSelected = name => {
     setNumSelected(numSelected + 1);
@@ -30,13 +44,13 @@ const Suggest = ({navigation, route}) => {
 
         {restaurants.map(restaurant => (
           <SelectionButton
-            text={restaurant}
-            key={restaurant}
+            text={restaurant.name}
+            key={restaurant.id}
             onSelect={() => {
-              suggestionSelected(restaurant);
+              suggestionSelected(restaurant.name);
             }}
             onDeselect={() => {
-              suggestionDeselected(restaurant);
+              suggestionDeselected(restaurant.name);
             }}
           />
         ))}
