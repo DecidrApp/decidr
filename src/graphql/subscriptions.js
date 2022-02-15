@@ -17,13 +17,8 @@ export const onCreateRoom = /* GraphQL */ `
   }
 `;
 export const onUpdateRoom = /* GraphQL */ `
-  subscription OnUpdateRoom(
-    $id: ID
-    $code: String
-    $selected: [String]
-    $state: String
-  ) {
-    onUpdateRoom(id: $id, code: $code, selected: $selected, state: $state) {
+  subscription OnUpdateRoom($id: ID) {
+    onUpdateRoom(id: $id) {
       id
       code
       selected

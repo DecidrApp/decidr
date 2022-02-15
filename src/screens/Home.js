@@ -16,6 +16,7 @@ import Geolocation from 'react-native-geolocation-service';
 import {API, graphqlOperation} from 'aws-amplify';
 import {createRoom} from '../graphql/mutations';
 import {setRoomId} from '../redux/actions/setRoomId';
+import {getRoom, getRoomByCode} from '../graphql/queries';
 
 const Home = ({navigation}) => {
   //TODO: Move this code out of here, clean-up, and add more error-handling
@@ -73,8 +74,22 @@ const Home = ({navigation}) => {
   };
 
   async function createAppSyncRoom() {
+    let code = generateCode();
+
+    await API.graphql(graphqlOperation(getRoom, {id: code}))
+      .then(r => {
+        if (r?.data?.getRoom?.length > 0) {
+          // Room already exists, try again
+          code = generateCode();
+        }
+      })
+      .catch(r => {
+        console.log('ERROR: ' + r);
+      });
+
     const newRoom = {
-      code: generateCode(),
+      code: code,
+      id: code,
       state: 'open',
       selected: [],
     };
@@ -91,10 +106,7 @@ const Home = ({navigation}) => {
           text={'Host Room'}
           onPress={() => {
             createAppSyncRoom().then(r => {
-              console.log(r);
-              sessionStore.dispatch(
-                setRoomId(r.data.createRoom.id, r.data.createRoom.code),
-              );
+              sessionStore.dispatch(setRoomId(r.data.createRoom.id));
               sessionStore.dispatch(setIsHost(true));
               navigation.navigate('Room');
             });

@@ -1,22 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, {useEffect, useState} from 'react';
+import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 import Button from '../components/atoms/Button';
 import Suggestion from '../components/atoms/Suggestion';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import {useIsFocused} from '@react-navigation/native';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
-import { API, graphqlOperation } from "aws-amplify";
-import { deleteRoom } from "../graphql/mutations";
+import {API, graphqlOperation} from 'aws-amplify';
+import {deleteRoom} from '../graphql/mutations';
+import {onUpdateRoom} from '../graphql/subscriptions';
 
 const Room = ({navigation}) => {
   const [roomCode, setRoomCode] = useState('?????');
   const [numParticipants] = useState(1);
   const isFocused = useIsFocused(); // Force re-render
 
+  const subscription = API.graphql(
+    graphqlOperation(onUpdateRoom, {id: sessionStore.getState().room_id}),
+  ).subscribe({
+    next: roomData => {
+      console.log('YAY: ');
+      console.warn(roomData?.value?.data?.onUpdateRoom?.selected);
+      // Do something with the data
+    },
+    error: error => console.error(error)
+  });
+
   useEffect(() => {
     if (sessionStore.getState().room_id) {
-      setRoomCode(sessionStore.getState().room_code);
+      setRoomCode(sessionStore.getState().room_id);
     }
   }, []);
 
@@ -34,7 +46,7 @@ const Room = ({navigation}) => {
           <Suggestion text={suggestion} key={suggestion} />
         ))}
 
-        <View style={[{paddingTop: '70%'}]}/>
+        <View style={[{paddingTop: '70%'}]} />
       </ScrollView>
 
       <View style={[styles.buttonContainer]}>
@@ -55,6 +67,7 @@ const Room = ({navigation}) => {
         <Button
           text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
           onPress={() => {
+            subscription.unsubscribe();
             if (sessionStore.getState().isHost) {
               console.log('Deleting: ' + sessionStore.getState().room_id);
               API.graphql(
@@ -63,6 +76,7 @@ const Room = ({navigation}) => {
                 }),
               );
             }
+
             sessionStore.dispatch(resetSuggestions());
             navigation.navigate('Home');
           }}
