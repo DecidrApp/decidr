@@ -9,6 +9,8 @@ import {resetSuggestions} from '../redux/actions/resetSuggestions';
 import {API, graphqlOperation} from 'aws-amplify';
 import {deleteRoom} from '../graphql/mutations';
 import {onUpdateRoom} from '../graphql/subscriptions';
+import {addSuggestions} from '../redux/actions/addSuggestions';
+import { resetRoom } from "../redux/actions/resetRoom";
 
 const Room = ({navigation}) => {
   const [roomCode, setRoomCode] = useState('?????');
@@ -19,14 +21,18 @@ const Room = ({navigation}) => {
     graphqlOperation(onUpdateRoom, {id: sessionStore.getState().room_id}),
   ).subscribe({
     next: roomData => {
-      console.log('YAY: ');
-      console.warn(roomData?.value?.data?.onUpdateRoom?.selected);
-      // Do something with the data
+      // TODO: There should probably be some more checking here to prevent
+      //       race conditions.
+      if (roomData?.value?.data?.onUpdateRoom?.selected) {
+        resetSuggestions();
+        addSuggestions(roomData?.value?.data?.onUpdateRoom?.selected);
+      }
     },
-    error: error => console.error(error)
+    error: error => console.error(error),
   });
 
   useEffect(() => {
+    // Get room code from redux for display
     if (sessionStore.getState().room_id) {
       setRoomCode(sessionStore.getState().room_id);
     }
@@ -68,16 +74,20 @@ const Room = ({navigation}) => {
           text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
           onPress={() => {
             subscription.unsubscribe();
+
+            // If user is the host, close the room
             if (sessionStore.getState().isHost) {
-              console.log('Deleting: ' + sessionStore.getState().room_id);
               API.graphql(
                 graphqlOperation(deleteRoom, {
-                  input: {id: sessionStore.getState().room_id},
+                  input: {id: roomCode},
                 }),
-              );
+              ).catch(() => {
+                console.warn('Unable to delete room');
+              });
             }
 
             sessionStore.dispatch(resetSuggestions());
+            sessionStore.dispatch(resetRoom());
             navigation.navigate('Home');
           }}
         />

@@ -1,6 +1,6 @@
 import {RESET_ROOM} from '../types';
 
-export function resetSuggestions() {
+export function resetRoom() {
   return {
     type: RESET_ROOM,
   };
