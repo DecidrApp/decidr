@@ -3,11 +3,12 @@ import {
   ADD_SUGGESTIONS,
   RESET_SUGGESTIONS,
   SET_IS_HOST,
-  SET_LOCATION,
-} from './types';
+  SET_LOCATION, SET_WINNING_VOTE,
+} from "./types";
 
 const initialState = {
   isHost: false,
+  winningVote: '',
   suggestions: [],
 };
 
@@ -24,6 +25,11 @@ const reducer = (state = initialState, action) => {
         granted: action.payload.granted,
         longitude: action.payload.longitude,
         latitude: action.payload.latitude,
+      };
+    case SET_WINNING_VOTE:
+      return {
+        ...state,
+        winningVote: action.payload
       };
     case ADD_SUGGESTIONS:
       const newSuggestions = state.suggestions;

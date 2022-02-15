@@ -8,7 +8,7 @@ import {resetSuggestions} from '../redux/actions/resetSuggestions';
 const Result = ({navigation}) => {
   return (
     <SafeAreaView style={[styles.background]}>
-      <Text style={[styles.result]}>{'RESULT'}</Text>
+      <Text style={[styles.result]}>{sessionStore.getState().winningVote}</Text>
 
       <Button
         text={'Return to Room'}
@@ -16,7 +16,7 @@ const Result = ({navigation}) => {
           navigation.navigate('Room');
         }}
       />
-      
+
       <Button
         text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
         onPress={() => {

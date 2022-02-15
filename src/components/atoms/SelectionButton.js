@@ -20,7 +20,7 @@ const Button = ({text, onSelect, onDeselect}) => {
       activeOpacity={0.95}
       underlayColor={COLORS.SECONDARY_LIGHT}>
       <View style={styles.container}>
-        <Text style={styles.buttonText}>{text}</Text>
+        <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode={'tail'}>{text}</Text>
         <View style={styles.toggle}>
           {isSelected && <View style={styles.toggleOn} />}
         </View>
@@ -38,11 +38,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 32,
+    flex: 1,
     color: COLORS.WHITE,
-    flexGrow: 1,
+    marginRight: 20,
   },
   container: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   toggle: {
     borderColor: COLORS.WHITE,

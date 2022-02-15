@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text} from 'react-native';
+import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 import Button from '../components/atoms/Button';
 import COLORS from '../styles/colors';
 import SelectionButton from '../components/atoms/SelectionButton';
@@ -22,7 +22,7 @@ const Suggest = ({navigation, route}) => {
       fetchData(lat, long).then(x => {
         // TODO: How many to render? Load on scroll?
         // TODO: I think this might be causing a memory leak
-        setRestaurants(x.slice(0, 5));
+        setRestaurants(x.slice(0, 10));
       });
     }
   };
@@ -30,7 +30,7 @@ const Suggest = ({navigation, route}) => {
 
   const suggestionSelected = name => {
     setNumSelected(numSelected + 1);
-    setSelected(selected => [...selected, name]);
+    setSelected([...selected, name]);
   };
 
   const suggestionDeselected = name => {
@@ -40,7 +40,9 @@ const Suggest = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={[styles.background]}>
-      <ScrollView>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}>
         <Text style={[styles.title]}>{'Add Suggestions:'}</Text>
 
         {restaurants.map(restaurant => (
@@ -56,6 +58,15 @@ const Suggest = ({navigation, route}) => {
           />
         ))}
 
+        <View
+          style={[
+            {
+              paddingTop: '55%',
+            },
+          ]}
+        />
+      </ScrollView>
+      <View style={[styles.addContainer]}>
         <Button
           text={'Add ' + String(numSelected) + ' selected'}
           onPress={() => {
@@ -63,7 +74,7 @@ const Suggest = ({navigation, route}) => {
             navigation.navigate('Room');
           }}
         />
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -71,8 +82,7 @@ const Suggest = ({navigation, route}) => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    flexGrow: 10,
-    paddingTop: '10%',
+    flexGrow: 1,
     paddingLeft: '10%',
     paddingRight: '10%',
     backgroundColor: COLORS.BACKGROUND,
@@ -81,8 +91,14 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '600',
     textAlign: 'center',
+    paddingTop: '10%',
     marginBottom: 20,
     color: COLORS.WHITE,
+  },
+  addContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: '5%',
   },
 });
 

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text} from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import Button from '../components/atoms/Button';
 import Suggestion from '../components/atoms/Suggestion';
 import COLORS from '../styles/colors';
@@ -26,6 +26,10 @@ const Room = ({navigation}) => {
           <Suggestion text={suggestion} key={suggestion} />
         ))}
 
+        <View style={[{paddingTop: '70%'}]}/>
+      </ScrollView>
+
+      <View style={[styles.buttonContainer]}>
         <Button
           text={'Add Suggestion'}
           onPress={() => {
@@ -47,7 +51,7 @@ const Room = ({navigation}) => {
             navigation.navigate('Home');
           }}
         />
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -73,6 +77,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 50,
     color: COLORS.WHITE,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: '0%',
+    width: '100%',
   },
 });
 
