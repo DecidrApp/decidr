@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import Button from '../components/atoms/Button';
 import Suggestion from '../components/atoms/Suggestion';
@@ -6,11 +6,19 @@ import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import {useIsFocused} from '@react-navigation/native';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
+import { API, graphqlOperation } from "aws-amplify";
+import { deleteRoom } from "../graphql/mutations";
 
 const Room = ({navigation}) => {
-  const [roomCode] = useState('x9z6y');
+  const [roomCode, setRoomCode] = useState('?????');
   const [numParticipants] = useState(1);
   const isFocused = useIsFocused(); // Force re-render
+
+  useEffect(() => {
+    if (sessionStore.getState().room_id) {
+      setRoomCode(sessionStore.getState().room_code);
+    }
+  }, []);
 
   return (
     <SafeAreaView style={[styles.background]}>
@@ -47,6 +55,14 @@ const Room = ({navigation}) => {
         <Button
           text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
           onPress={() => {
+            if (sessionStore.getState().isHost) {
+              console.log('Deleting: ' + sessionStore.getState().room_id);
+              API.graphql(
+                graphqlOperation(deleteRoom, {
+                  input: {id: sessionStore.getState().room_id},
+                }),
+              );
+            }
             sessionStore.dispatch(resetSuggestions());
             navigation.navigate('Home');
           }}

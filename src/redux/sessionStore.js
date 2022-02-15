@@ -3,7 +3,7 @@ import {
   ADD_SUGGESTIONS,
   RESET_SUGGESTIONS,
   SET_IS_HOST,
-  SET_LOCATION, SET_WINNING_VOTE,
+  SET_LOCATION, SET_ROOM_ID, SET_WINNING_VOTE,
 } from "./types";
 
 const initialState = {
@@ -30,6 +30,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         winningVote: action.payload
+      };
+    case SET_ROOM_ID:
+      return {
+        ...state,
+        room_code: action.payload.room_code,
+        room_id: action.payload.room_id,
       };
     case ADD_SUGGESTIONS:
       const newSuggestions = state.suggestions;

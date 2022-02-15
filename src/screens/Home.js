@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   PermissionsAndroid,
   Platform,
@@ -13,6 +13,9 @@ import {setLocation} from '../redux/actions/setLocation';
 import {setIsHost} from '../redux/actions/setIsHost';
 import sessionStore from '../redux/sessionStore';
 import Geolocation from 'react-native-geolocation-service';
+import {API, graphqlOperation} from 'aws-amplify';
+import {createRoom} from '../graphql/mutations';
+import {setRoomId} from '../redux/actions/setRoomId';
 
 const Home = ({navigation}) => {
   //TODO: Move this code out of here, clean-up, and add more error-handling
@@ -62,6 +65,23 @@ const Home = ({navigation}) => {
     console.warn('Unable to get location due to unknown platform');
   }
 
+  const generateCode = () => {
+    return Math.random()
+      .toString(36)
+      .replace(/[^a-z0-9]+/, '')
+      .slice(0, 5);
+  };
+
+  async function createAppSyncRoom() {
+    const newRoom = {
+      code: generateCode(),
+      state: 'open',
+      selected: [],
+    };
+
+    return API.graphql(graphqlOperation(createRoom, {input: newRoom}));
+  }
+
   return (
     <SafeAreaView style={[styles.background]}>
       <View>
@@ -70,8 +90,14 @@ const Home = ({navigation}) => {
         <Button
           text={'Host Room'}
           onPress={() => {
-            sessionStore.dispatch(setIsHost(true));
-            navigation.navigate('Room');
+            createAppSyncRoom().then(r => {
+              console.log(r);
+              sessionStore.dispatch(
+                setRoomId(r.data.createRoom.id, r.data.createRoom.code),
+              );
+              sessionStore.dispatch(setIsHost(true));
+              navigation.navigate('Room');
+            });
           }}
         />
         <Button
