@@ -10,32 +10,38 @@ import {API, graphqlOperation} from 'aws-amplify';
 import {deleteRoom} from '../graphql/mutations';
 import {onUpdateRoom} from '../graphql/subscriptions';
 import {addSuggestions} from '../redux/actions/addSuggestions';
-import { resetRoom } from "../redux/actions/resetRoom";
+import {resetRoom} from '../redux/actions/resetRoom';
 
 const Room = ({navigation}) => {
   const [roomCode, setRoomCode] = useState('?????');
   const [numParticipants] = useState(1);
   const isFocused = useIsFocused(); // Force re-render
 
-  const subscription = API.graphql(
-    graphqlOperation(onUpdateRoom, {id: sessionStore.getState().room_id}),
-  ).subscribe({
-    next: roomData => {
-      // TODO: There should probably be some more checking here to prevent
-      //       race conditions.
-      if (roomData?.value?.data?.onUpdateRoom?.selected) {
-        resetSuggestions();
-        addSuggestions(roomData?.value?.data?.onUpdateRoom?.selected);
-      }
-    },
-    error: error => console.error(error),
-  });
-
   useEffect(() => {
     // Get room code from redux for display
     if (sessionStore.getState().room_id) {
       setRoomCode(sessionStore.getState().room_id);
     }
+
+    const subscription = API.graphql(
+      graphqlOperation(onUpdateRoom, {id: sessionStore.getState().room_id}),
+    ).subscribe({
+      next: roomData => {
+        // TODO: There should probably be some more checking here to prevent
+        //       race conditions.
+        if (roomData?.value?.data?.onUpdateRoom?.selected) {
+          // Updates are coming through, but screen is not re-rendering
+          console.log('Received Update');
+          console.log(roomData?.value?.data?.onUpdateRoom?.selected);
+          sessionStore.dispatch(resetSuggestions());
+          sessionStore.dispatch(
+            addSuggestions(roomData?.value?.data?.onUpdateRoom?.selected),
+          );
+        }
+      },
+      error: error => console.warn(error),
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   return (
@@ -73,7 +79,7 @@ const Room = ({navigation}) => {
         <Button
           text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
           onPress={() => {
-            subscription.unsubscribe();
+            // subscription.unsubscribe();
 
             // If user is the host, close the room
             if (sessionStore.getState().isHost) {

@@ -115,6 +115,7 @@ const Home = ({navigation}) => {
         <Button
           text={'Join Room'}
           onPress={() => {
+            sessionStore.dispatch(setRoomId('0vixw'));
             sessionStore.dispatch(setIsHost(false));
             navigation.navigate('Room');
           }}
