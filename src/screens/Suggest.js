@@ -5,11 +5,9 @@ import COLORS from '../styles/colors';
 import SelectionButton from '../components/atoms/SelectionButton';
 import sessionStore from '../redux/sessionStore';
 import {addSuggestions} from '../redux/actions/addSuggestions';
-import {connect} from 'react-redux';
-import {setIsHost} from '../redux/actions/setIsHost';
 import {fetchData} from '../apis/SkipTheDishes';
-import { API, graphqlOperation } from "aws-amplify";
-import { deleteRoom, updateRoom } from "../graphql/mutations";
+import {API, graphqlOperation} from 'aws-amplify';
+import {deleteRoom, updateRoom} from '../graphql/mutations';
 
 const Suggest = ({navigation, route}) => {
   const [restaurants, setRestaurants] = useState([]);
@@ -73,7 +71,6 @@ const Suggest = ({navigation, route}) => {
           text={'Add ' + String(numSelected) + ' selected'}
           onPress={() => {
             sessionStore.dispatch(addSuggestions(selected));
-            console.log(sessionStore.getState().room_id);
             if (sessionStore.getState().room_id) {
               API.graphql(
                 graphqlOperation(updateRoom, {

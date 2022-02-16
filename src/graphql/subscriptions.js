@@ -27,13 +27,8 @@ export const onUpdateRoom = /* GraphQL */ `
   }
 `;
 export const onDeleteRoom = /* GraphQL */ `
-  subscription OnDeleteRoom(
-    $id: ID
-    $code: String
-    $selected: [String]
-    $state: String
-  ) {
-    onDeleteRoom(id: $id, code: $code, selected: $selected, state: $state) {
+  subscription OnDeleteRoom($id: ID) {
+    onDeleteRoom(id: $id) {
       id
       code
       selected

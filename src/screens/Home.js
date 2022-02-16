@@ -1,10 +1,11 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
   PermissionsAndroid,
   Platform,
   SafeAreaView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import Button from '../components/atoms/Button';
@@ -13,12 +14,17 @@ import {setLocation} from '../redux/actions/setLocation';
 import {setIsHost} from '../redux/actions/setIsHost';
 import sessionStore from '../redux/sessionStore';
 import Geolocation from 'react-native-geolocation-service';
-import {API, graphqlOperation} from 'aws-amplify';
-import {createRoom} from '../graphql/mutations';
 import {setRoomId} from '../redux/actions/setRoomId';
-import {getRoom, getRoomByCode} from '../graphql/queries';
+import {
+  createAppSyncRoom,
+  appSyncRoomExists,
+  getAppSyncRoom,
+} from '../apis/AppSync';
+import {addSuggestions} from '../redux/actions/addSuggestions';
 
 const Home = ({navigation}) => {
+  const [roomCode, onChangeRoomCode] = React.useState('');
+
   //TODO: Move this code out of here, clean-up, and add more error-handling
   const getLocation = () => {
     Geolocation.getCurrentPosition(
@@ -66,37 +72,6 @@ const Home = ({navigation}) => {
     console.warn('Unable to get location due to unknown platform');
   }
 
-  const generateCode = () => {
-    return Math.random()
-      .toString(36)
-      .replace(/[^a-z0-9]+/, '')
-      .slice(0, 5);
-  };
-
-  async function createAppSyncRoom() {
-    let code = generateCode();
-
-    await API.graphql(graphqlOperation(getRoom, {id: code}))
-      .then(r => {
-        if (r?.data?.getRoom?.length > 0) {
-          // Room already exists, try again
-          code = generateCode();
-        }
-      })
-      .catch(r => {
-        console.log('ERROR: ' + r);
-      });
-
-    const newRoom = {
-      code: code,
-      id: code,
-      state: 'open',
-      selected: [],
-    };
-
-    return API.graphql(graphqlOperation(createRoom, {input: newRoom}));
-  }
-
   return (
     <SafeAreaView style={[styles.background]}>
       <View>
@@ -105,20 +80,42 @@ const Home = ({navigation}) => {
         <Button
           text={'Host Room'}
           onPress={() => {
-            createAppSyncRoom().then(r => {
-              sessionStore.dispatch(setRoomId(r.data.createRoom.id));
-              sessionStore.dispatch(setIsHost(true));
-              navigation.navigate('Room');
-            });
+            createAppSyncRoom()
+              .then(r => {
+                sessionStore.dispatch(setRoomId(r.data.createRoom.id));
+                sessionStore.dispatch(setIsHost(true));
+                navigation.navigate('Room');
+              })
+              .catch(() => {
+                // TODO: Make this pretty for the user
+                console.error('Unable to create room');
+              });
           }}
         />
         <Button
           text={'Join Room'}
           onPress={() => {
-            sessionStore.dispatch(setRoomId('0vixw'));
-            sessionStore.dispatch(setIsHost(false));
-            navigation.navigate('Room');
+            appSyncRoomExists(roomCode).then(r => {
+              if (r) {
+                getAppSyncRoom(roomCode).then(r => {
+                  sessionStore.dispatch(
+                    addSuggestions(r?.data?.getRoom?.selected),
+                  );
+                  sessionStore.dispatch(setRoomId(roomCode));
+                  sessionStore.dispatch(setIsHost(false));
+                  navigation.navigate('Room');
+                });
+              } else {
+                // TODO: Make this pretty for the user
+                console.error('Unable to find room');
+              }
+            });
           }}
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeRoomCode}
+          value={roomCode}
         />
       </View>
     </SafeAreaView>
