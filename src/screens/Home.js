@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  Alert,
+  Modal,
   PermissionsAndroid,
   Platform,
   SafeAreaView,
@@ -87,14 +89,44 @@ const Home = ({navigation}) => {
                 navigation.navigate('Room');
               })
               .catch(() => {
-                // TODO: Make this pretty for the user
-                console.error('Unable to create room');
+                Alert.alert(
+                  'Unable to create room',
+                  'Hmm something went wrong trying to create a room, please try again.',
+                  [
+                    {
+                      text: 'Dismiss',
+                      style: 'cancel',
+                    },
+                  ],
+                );
+                return;
               });
           }}
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeRoomCode}
+          value={roomCode}
+          placeholder={'Room Code'}
+          autoCapitalize={'none'}
+          autoCorrect={false}
         />
         <Button
           text={'Join Room'}
           onPress={() => {
+            if (roomCode === '') {
+              Alert.alert(
+                'Missing room code',
+                'Please make sure you enter a room code.',
+                [
+                  {
+                    text: 'Dismiss',
+                    style: 'cancel',
+                  },
+                ],
+              );
+              return;
+            }
             appSyncRoomExists(roomCode).then(r => {
               if (r) {
                 getAppSyncRoom(roomCode).then(r => {
@@ -106,16 +138,19 @@ const Home = ({navigation}) => {
                   navigation.navigate('Room');
                 });
               } else {
-                // TODO: Make this pretty for the user
-                console.error('Unable to find room');
+                Alert.alert(
+                  'Unable to join room',
+                  "Hmm we can't seem to find that room. Are you sure your code is correct?",
+                  [
+                    {
+                      text: 'Dismiss',
+                      style: 'cancel',
+                    },
+                  ],
+                );
               }
             });
           }}
-        />
-        <TextInput
-          style={styles.input}
-          onChangeText={onChangeRoomCode}
-          value={roomCode}
         />
       </View>
     </SafeAreaView>
@@ -137,6 +172,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 50,
     color: COLORS.WHITE,
+  },
+  input: {
+    margin: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    textAlign: 'center',
+    textTransform: 'lowercase',
+    height: 30,
+    borderRadius: 10,
+    backgroundColor: COLORS.WHITE,
   },
 });
 
