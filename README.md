@@ -1,5 +1,5 @@
 # Decidr
-A React Native application for make group decision.
+A mobile application to help users make a group decision on what food to order from your local food delivery app.
 
 ## Proposal
 ### Presentation
@@ -15,7 +15,7 @@ https://docs.google.com/presentation/d/1H0rc1cy_WvMENo4PmDU1r2VIO1bAlTP0RyLi928g
 * AWS DynamoDB - data store
 * AWS AppSync - middleware
 * React Native - front end
-* 
+
 ### Installation
 Ensure you have:
 * JDK
