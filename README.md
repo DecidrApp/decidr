@@ -20,6 +20,7 @@ https://docs.google.com/presentation/d/1H0rc1cy_WvMENo4PmDU1r2VIO1bAlTP0RyLi928g
 Ensure you have:
 * JDK
 * Node v14.18.1 (nvm is suggested to manage node versions)
-* Android SDK
+* Android SDK for Android or XCode for iOS
+* AWS API Key (is not commited to repo)
 
 See https://reactnative.dev/docs/environment-setup for more information
