@@ -5,7 +5,7 @@ export const getRoom = /* GraphQL */ `
   query GetRoom($id: ID!) {
     getRoom(id: $id) {
       id
-      code
+      owner_hash
       selected
       state
     }
@@ -20,9 +20,38 @@ export const listRooms = /* GraphQL */ `
     listRooms(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        code
+        owner_hash
         selected
         state
+      }
+      nextToken
+    }
+  }
+`;
+export const getVote = /* GraphQL */ `
+  query GetVote($id: ID!) {
+    getVote(id: $id) {
+      id
+      room_id {
+        id
+        owner_hash
+        selected
+        state
+      }
+      order
+    }
+  }
+`;
+export const listVotes = /* GraphQL */ `
+  query ListVotes(
+    $filter: TableVoteFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listVotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        order
       }
       nextToken
     }
