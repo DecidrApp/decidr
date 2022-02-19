@@ -5,7 +5,6 @@ export const getRoom = /* GraphQL */ `
   query GetRoom($id: ID!) {
     getRoom(id: $id) {
       id
-      owner_hash
       selected
       state
     }
@@ -20,7 +19,6 @@ export const listRooms = /* GraphQL */ `
     listRooms(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        owner_hash
         selected
         state
       }
@@ -34,7 +32,6 @@ export const getVote = /* GraphQL */ `
       id
       room_id {
         id
-        owner_hash
         selected
         state
       }

@@ -36,7 +36,6 @@ async function createAppSyncRoom() {
 
   const newRoom = {
     id: code,
-    owner_hash: code,
     state: 'open',
     selected: [],
   };

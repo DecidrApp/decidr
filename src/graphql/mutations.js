@@ -5,7 +5,6 @@ export const createRoom = /* GraphQL */ `
   mutation CreateRoom($input: CreateRoomInput!) {
     createRoom(input: $input) {
       id
-      owner_hash
       selected
       state
     }
@@ -15,7 +14,6 @@ export const updateRoom = /* GraphQL */ `
   mutation UpdateRoom($input: UpdateRoomInput!) {
     updateRoom(input: $input) {
       id
-      owner_hash
       selected
       state
     }
@@ -25,7 +23,6 @@ export const deleteRoom = /* GraphQL */ `
   mutation DeleteRoom($input: DeleteRoomInput!) {
     deleteRoom(input: $input) {
       id
-      owner_hash
       selected
       state
     }
@@ -37,7 +34,6 @@ export const createVote = /* GraphQL */ `
       id
       room_id {
         id
-        owner_hash
         selected
         state
       }
@@ -51,7 +47,6 @@ export const updateVote = /* GraphQL */ `
       id
       room_id {
         id
-        owner_hash
         selected
         state
       }
@@ -65,7 +60,6 @@ export const deleteVote = /* GraphQL */ `
       id
       room_id {
         id
-        owner_hash
         selected
         state
       }
