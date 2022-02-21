@@ -30,12 +30,11 @@ export const getVote = /* GraphQL */ `
   query GetVote($id: ID!) {
     getVote(id: $id) {
       id
-      room_id {
-        id
-        selected
-        state
+      room_id
+      ranking {
+        name
+        rank
       }
-      order
     }
   }
 `;
@@ -48,7 +47,7 @@ export const listVotes = /* GraphQL */ `
     listVotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        order
+        room_id
       }
       nextToken
     }

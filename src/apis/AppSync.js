@@ -1,6 +1,21 @@
 import {API, graphqlOperation} from 'aws-amplify';
 import {getRoom} from '../graphql/queries';
-import {createRoom, deleteRoom} from '../graphql/mutations';
+import {createRoom, createVote, deleteRoom} from '../graphql/mutations';
+
+// ------------------------------------------------
+// ---------------- HELPER FUNCTIONS --------------
+// ------------------------------------------------
+
+function generateCode() {
+  return Math.random()
+    .toString(36)
+    .replace(/[^a-np-z1-9]+/, '')
+    .slice(0, 5);
+}
+
+// ------------------------------------------------
+// ---------------- ROOM OPERATIONS ---------------
+// ------------------------------------------------
 
 async function appSyncRoomExists(code) {
   return API.graphql(graphqlOperation(getRoom, {id: code}))
@@ -17,13 +32,6 @@ async function getAppSyncRoom(code) {
     return null;
   });
 }
-
-const generateCode = () => {
-  return Math.random()
-    .toString(36)
-    .replace(/[^a-np-z1-9]+/, '')
-    .slice(0, 5);
-};
 
 async function createAppSyncRoom() {
   let code = generateCode();
@@ -53,4 +61,25 @@ function closeAppSyncRoom(code) {
   });
 }
 
-export {appSyncRoomExists, getAppSyncRoom, createAppSyncRoom, closeAppSyncRoom};
+// ------------------------------------------------
+// ---------------- VOTE OPERATIONS ---------------
+// ------------------------------------------------
+
+function submitBallot(room_id, rankings) {
+  return API.graphql(
+    graphqlOperation(createVote, {
+      input: {room_id: room_id, ranking: rankings},
+    }),
+  ).catch(r => {
+    console.info(r);
+    console.warn('Unable to create vote');
+  });
+}
+
+export {
+  appSyncRoomExists,
+  getAppSyncRoom,
+  createAppSyncRoom,
+  closeAppSyncRoom,
+  submitBallot,
+};
