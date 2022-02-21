@@ -3,9 +3,8 @@ import {getRoom, getVotesForRoom} from '../graphql/queries';
 import {
   createRoom,
   createVote,
-  deleteAllVotesForRoom,
+  deleteVotes,
   deleteRoom,
-  deleteVote,
 } from '../graphql/mutations';
 
 // ------------------------------------------------
@@ -88,19 +87,22 @@ function submitBallot(room_id, rankings) {
   });
 }
 
-function deleteAllBallots(room_id) {
-  API.graphql(
+function getAllBallots(room_id) {
+  return API.graphql(
     graphqlOperation(getVotesForRoom, {
       room_id: room_id,
     }),
-  )
-    .catch(r => {
-      console.info(r);
-      console.warn('Unable to fetch votes for room ' + room_id);
-    })
+  ).catch(r => {
+    console.info(r);
+    console.warn('Unable to fetch votes for room ' + room_id);
+  });
+}
+
+function deleteAllBallots(room_id) {
+  getAllBallots(room_id)
     .then(r => {
       return API.graphql(
-        graphqlOperation(deleteAllVotesForRoom, {
+        graphqlOperation(deleteVotes, {
           input: {ids: r.data.getVotesForRoom.items.map(a => a.id)},
         }),
       );

@@ -36,8 +36,8 @@ const Room = ({navigation}) => {
   function closeRoom() {
     // If user is the host, close the room
     if (sessionStore.getState().isHost) {
-      closeAppSyncRoom(roomCode);
       deleteAllBallots(roomCode);
+      closeAppSyncRoom(roomCode);
     }
 
     sessionStore.dispatch(resetSuggestions());

@@ -36,14 +36,13 @@ const Vote = ({navigation}) => {
         <Button
           text={'Vote'}
           onPress={() => {
-            // TODO: Save ballot ID to prevent duplicate submission
             let ballot = [];
             for (let i = 0; i < options.length; i++) {
               ballot.push({name: options[i].key, rank: i + 1});
             }
 
             submitBallot(sessionStore.getState().room_id, ballot).then(r => {
-              console.log(r.data.createVote.id);
+              // TODO: Save ballot ID to prevent duplicate submission
             });
 
             sessionStore.dispatch(

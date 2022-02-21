@@ -64,9 +64,9 @@ export const deleteVote = /* GraphQL */ `
     }
   }
 `;
-export const deleteAllVotesForRoom = /* GraphQL */ `
-  mutation DeleteAllVotesForRoom($input: DeleteRoomVotesInput!) {
-    deleteAllVotesForRoom(input: $input) {
+export const deleteVotes = /* GraphQL */ `
+  mutation DeleteVotes($input: DeleteVotesInput!) {
+    deleteVotes(input: $input) {
       id
       room_id
       ranking {
