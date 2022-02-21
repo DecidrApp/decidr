@@ -6,6 +6,7 @@ import sessionStore from '../redux/sessionStore';
 import DraggableFlatList from 'react-native-draggable-flatlist/src/components/DraggableFlatList';
 import Draggable from '../components/atoms/Draggable';
 import {setWinningVote} from '../redux/actions/setWinningVote';
+import {submitBallot} from '../apis/AppSync';
 
 const Vote = ({navigation}) => {
   const listData = sessionStore.getState().suggestions.map(suggestion => {
@@ -35,6 +36,16 @@ const Vote = ({navigation}) => {
         <Button
           text={'Vote'}
           onPress={() => {
+            // TODO: Save ballot ID to prevent duplicate submission
+            let ballot = [];
+            for (let i = 0; i < options.length; i++) {
+              ballot.push({name: options[i].key, rank: i + 1});
+            }
+
+            submitBallot(sessionStore.getState().room_id, ballot).then(r => {
+              console.log(r.data.createVote.id);
+            });
+
             sessionStore.dispatch(
               options.length === 0
                 ? setWinningVote('No Winner')

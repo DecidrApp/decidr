@@ -1,6 +1,12 @@
 import {API, graphqlOperation} from 'aws-amplify';
-import {getRoom} from '../graphql/queries';
-import {createRoom, createVote, deleteRoom} from '../graphql/mutations';
+import {getRoom, getVotesForRoom} from '../graphql/queries';
+import {
+  createRoom,
+  createVote,
+  deleteAllVotesForRoom,
+  deleteRoom,
+  deleteVote,
+} from '../graphql/mutations';
 
 // ------------------------------------------------
 // ---------------- HELPER FUNCTIONS --------------
@@ -56,8 +62,9 @@ function closeAppSyncRoom(code) {
     graphqlOperation(deleteRoom, {
       input: {id: code},
     }),
-  ).catch(() => {
-    console.warn('Unable to delete room');
+  ).catch(r => {
+    console.info(r);
+    console.warn('Unable to delete room ' + code);
   });
 }
 
@@ -72,8 +79,36 @@ function submitBallot(room_id, rankings) {
     }),
   ).catch(r => {
     console.info(r);
-    console.warn('Unable to create vote');
+    console.warn(
+      'Unable to create vote record for room: ' +
+        room_id +
+        ' with rankings: ' +
+        rankings,
+    );
   });
+}
+
+function deleteAllBallots(room_id) {
+  API.graphql(
+    graphqlOperation(getVotesForRoom, {
+      room_id: room_id,
+    }),
+  )
+    .catch(r => {
+      console.info(r);
+      console.warn('Unable to fetch votes for room ' + room_id);
+    })
+    .then(r => {
+      return API.graphql(
+        graphqlOperation(deleteAllVotesForRoom, {
+          input: {ids: r.data.getVotesForRoom.items.map(a => a.id)},
+        }),
+      );
+    })
+    .catch(r => {
+      console.info(r);
+      console.warn('Unable to delete votes for room ' + room_id);
+    });
 }
 
 export {
@@ -82,4 +117,5 @@ export {
   createAppSyncRoom,
   closeAppSyncRoom,
   submitBallot,
+  deleteAllBallots,
 };

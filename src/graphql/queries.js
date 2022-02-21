@@ -38,6 +38,17 @@ export const getVote = /* GraphQL */ `
     }
   }
 `;
+export const getVotesForRoom = /* GraphQL */ `
+  query GetVotesForRoom($room_id: String!) {
+    getVotesForRoom(room_id: $room_id) {
+      items {
+        id
+        room_id
+      }
+      nextToken
+    }
+  }
+`;
 export const listVotes = /* GraphQL */ `
   query ListVotes(
     $filter: TableVoteFilterInput

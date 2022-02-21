@@ -10,7 +10,7 @@ import {API, graphqlOperation} from 'aws-amplify';
 import {onDeleteRoom, onUpdateRoom} from '../graphql/subscriptions';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import {resetRoom} from '../redux/actions/resetRoom';
-import {closeAppSyncRoom} from '../apis/AppSync';
+import {closeAppSyncRoom, deleteAllBallots} from '../apis/AppSync';
 
 const Room = ({navigation}) => {
   const [roomCode, setRoomCode] = useState('?????');
@@ -37,6 +37,7 @@ const Room = ({navigation}) => {
     // If user is the host, close the room
     if (sessionStore.getState().isHost) {
       closeAppSyncRoom(roomCode);
+      deleteAllBallots(roomCode);
     }
 
     sessionStore.dispatch(resetSuggestions());
