@@ -12,6 +12,9 @@ import {Provider} from 'react-redux';
 import Vote from './src/screens/Vote';
 import Result from './src/screens/Result';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import Amplify from 'aws-amplify';
+import awsmobile from './aws-exports';
+Amplify.configure(awsmobile);
 
 const Stack = createNativeStackNavigator();
 
