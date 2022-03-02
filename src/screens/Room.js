@@ -64,7 +64,6 @@ const Room = ({navigation}) => {
         // TODO: There should probably be some more checking here to prevent
         //       race conditions.
         if (roomData?.value?.data?.onUpdateRoom?.selected) {
-          // Updates are coming through, but screen is not re-rendering
           setSuggestions(roomData?.value?.data?.onUpdateRoom?.selected);
           sessionStore.dispatch(
             addSuggestions(roomData?.value?.data?.onUpdateRoom?.selected),

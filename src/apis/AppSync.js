@@ -79,6 +79,17 @@ function updateRoomState(code, state) {
   });
 }
 
+function updateRoomWinner(code, winner) {
+  return API.graphql(
+    graphqlOperation(updateRoom, {
+      input: {id: code, winner: winner},
+    }),
+  ).catch(r => {
+    console.info(r);
+    console.warn('Unable to update room ' + code + 'with winner ' + winner);
+  });
+}
+
 // ------------------------------------------------
 // ---------------- VOTE OPERATIONS ---------------
 // ------------------------------------------------
@@ -131,6 +142,7 @@ export {
   createAppSyncRoom,
   closeAppSyncRoom,
   updateRoomState,
+  updateRoomWinner,
   submitBallot,
   getAllBallots,
   deleteAllBallots,

@@ -5,7 +5,11 @@ import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import {API, graphqlOperation} from 'aws-amplify';
 import {onCreateVote, onUpdateRoom} from '../graphql/subscriptions';
-import {getAllBallots, updateRoomState} from '../apis/AppSync';
+import {
+  getAllBallots,
+  updateRoomState,
+  updateRoomWinner,
+} from '../apis/AppSync';
 import {calculateRanking} from '../apis/Voting';
 import {setWinningVote} from '../redux/actions/setWinningVote';
 
@@ -24,6 +28,9 @@ const Waiting = ({navigation, route}) => {
 
   function onRoomUpdate(roomData) {
     if (roomData?.value?.data?.onUpdateRoom?.state === 'result') {
+      sessionStore.dispatch(
+        setWinningVote(roomData?.value?.data?.onUpdateRoom?.winner),
+      );
       navigation.navigate('Result');
     }
   }
@@ -65,7 +72,11 @@ const Waiting = ({navigation, route}) => {
               sessionStore.getState().suggestions,
               votes.map(v => v.ranking),
             );
-            updateRoomState(sessionStore.getState().room_id, 'result');
+            updateRoomWinner(sessionStore.getState().room_id, result[0]).then(
+              () => {
+                updateRoomState(sessionStore.getState().room_id, 'result');
+              },
+            );
             sessionStore.dispatch(setWinningVote(result[0]));
           }}
         />

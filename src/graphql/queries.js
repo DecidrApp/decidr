@@ -7,6 +7,7 @@ export const getRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -21,6 +22,7 @@ export const listRooms = /* GraphQL */ `
         id
         selected
         state
+        winner
       }
       nextToken
     }

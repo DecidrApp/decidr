@@ -1,4 +1,4 @@
-const {Schulze} = require('condorcet');
+const {Schulze, RankedPair} = require('condorcet');
 
 function calculateRanking(options, ballots) {
   // Create candidates set

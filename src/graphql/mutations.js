@@ -7,6 +7,7 @@ export const createRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -16,6 +17,7 @@ export const updateRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -25,6 +27,7 @@ export const deleteRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;

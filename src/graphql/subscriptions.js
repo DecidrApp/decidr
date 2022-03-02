@@ -7,6 +7,7 @@ export const onCreateRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -16,6 +17,7 @@ export const onUpdateRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -25,6 +27,7 @@ export const onDeleteRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
