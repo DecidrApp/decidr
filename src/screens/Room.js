@@ -32,7 +32,6 @@ const Room = ({navigation}) => {
     }
   }
 
-  // TODO: This might need to be fixed/wrapped in another function
   function closeRoom() {
     // If user is the host, close the room
     if (sessionStore.getState().isHost) {
@@ -61,7 +60,17 @@ const Room = ({navigation}) => {
     const deleteSub = API.graphql(
       graphqlOperation(onDeleteRoom, {id: sessionStore.getState().room_id}),
     ).subscribe({
-      next: closeRoom,
+      next: roomData => {
+        // TODO: There should probably be some more checking here to prevent
+        //       race conditions.
+        if (roomData?.value?.data?.onUpdateRoom?.selected) {
+          // Updates are coming through, but screen is not re-rendering
+          setSuggestions(roomData?.value?.data?.onUpdateRoom?.selected);
+          sessionStore.dispatch(
+            addSuggestions(roomData?.value?.data?.onUpdateRoom?.selected),
+          );
+        }
+      },
       error: error => console.warn(error),
     });
 
@@ -69,7 +78,7 @@ const Room = ({navigation}) => {
       updateSub.unsubscribe();
       deleteSub.unsubscribe();
     };
-  }, [closeRoom]);
+  }, []);
 
   return (
     <SafeAreaView style={[styles.background]}>

@@ -5,6 +5,7 @@ import {
   createVote,
   deleteVotes,
   deleteRoom,
+  updateRoom,
 } from '../graphql/mutations';
 
 // ------------------------------------------------
@@ -67,6 +68,17 @@ function closeAppSyncRoom(code) {
   });
 }
 
+function updateRoomState(code, state) {
+  return API.graphql(
+    graphqlOperation(updateRoom, {
+      input: {id: code, state: state},
+    }),
+  ).catch(r => {
+    console.info(r);
+    console.warn('Unable to update room ' + code + 'with state ' + state);
+  });
+}
+
 // ------------------------------------------------
 // ---------------- VOTE OPERATIONS ---------------
 // ------------------------------------------------
@@ -118,6 +130,8 @@ export {
   getAppSyncRoom,
   createAppSyncRoom,
   closeAppSyncRoom,
+  updateRoomState,
   submitBallot,
+  getAllBallots,
   deleteAllBallots,
 };

@@ -5,13 +5,13 @@ function calculateRanking(options, ballots) {
   const candidates = new Set(options);
   const s = new Schulze(candidates);
 
-  for (const ballot in ballots) {
+  for (const ballot of ballots) {
     // Map object ballot from AppSync into format for condorcet library
     s.addBallot(new Map(ballot.map(a => [a.name, a.rank])));
   }
 
   // Return ranking
-  s.rank();
+  return s.rank();
 }
 
 export {calculateRanking};

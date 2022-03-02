@@ -44,6 +44,10 @@ export const getVotesForRoom = /* GraphQL */ `
       items {
         id
         room_id
+        ranking {
+          name
+          rank
+        }
       }
       nextToken
     }

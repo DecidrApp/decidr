@@ -5,7 +5,6 @@ import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import DraggableFlatList from 'react-native-draggable-flatlist/src/components/DraggableFlatList';
 import Draggable from '../components/Draggable';
-import {setWinningVote} from '../redux/actions/setWinningVote';
 import {submitBallot} from '../apis/AppSync';
 
 const Vote = ({navigation}) => {
@@ -43,14 +42,8 @@ const Vote = ({navigation}) => {
 
             submitBallot(sessionStore.getState().room_id, ballot).then(r => {
               // TODO: Save ballot ID to prevent duplicate submission
+              navigation.navigate('Waiting');
             });
-
-            sessionStore.dispatch(
-              options.length === 0
-                ? setWinningVote('No Winner')
-                : setWinningVote(options[0].label),
-            );
-            navigation.navigate('Result');
           }}
         />
       </View>
