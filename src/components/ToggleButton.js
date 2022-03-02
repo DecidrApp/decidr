@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {Text, TouchableHighlight, StyleSheet, View} from 'react-native';
-import COLORS from '../../styles/colors';
+import COLORS from '../styles/colors';
 
-const Button = ({text, onSelect, onDeselect}) => {
+const ToggleButton = ({text, onSelect, onDeselect}) => {
   const [isSelected, setIsSelected] = useState(false);
 
   return (
@@ -20,7 +20,12 @@ const Button = ({text, onSelect, onDeselect}) => {
       activeOpacity={0.95}
       underlayColor={COLORS.SECONDARY_LIGHT}>
       <View style={styles.container}>
-        <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode={'tail'}>{text}</Text>
+        <Text
+          style={styles.buttonText}
+          numberOfLines={1}
+          ellipsizeMode={'tail'}>
+          {text}
+        </Text>
         <View style={styles.toggle}>
           {isSelected && <View style={styles.toggleOn} />}
         </View>
@@ -61,4 +66,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Button;
+export default ToggleButton;

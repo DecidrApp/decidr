@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
-import Button from '../components/atoms/Button';
-import Suggestion from '../components/atoms/Suggestion';
+import TextButton from '../components/TextButton';
+import Suggestion from '../components/Suggestion';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import {useIsFocused} from '@react-navigation/native';
@@ -89,21 +89,21 @@ const Room = ({navigation}) => {
       </ScrollView>
 
       <View style={[styles.buttonContainer]}>
-        <Button
+        <TextButton
           text={'Add Suggestion'}
           onPress={() => {
             navigation.navigate('Suggest');
           }}
         />
 
-        <Button
+        <TextButton
           text={'Vote'}
           onPress={() => {
             navigation.navigate('Vote');
           }}
         />
 
-        <Button
+        <TextButton
           text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
           onPress={closeRoom}
         />

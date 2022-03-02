@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
-import Button from '../components/atoms/Button';
+import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
-import SelectionButton from '../components/atoms/SelectionButton';
+import ToggleButton from '../components/ToggleButton';
 import sessionStore from '../redux/sessionStore';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import {fetchData} from '../apis/SkipTheDishes';
 import {API, graphqlOperation} from 'aws-amplify';
-import {deleteRoom, updateRoom} from '../graphql/mutations';
+import {updateRoom} from '../graphql/mutations';
 
 const Suggest = ({navigation, route}) => {
   const [restaurants, setRestaurants] = useState([]);
@@ -46,7 +46,7 @@ const Suggest = ({navigation, route}) => {
         <Text style={[styles.title]}>{'Add Suggestions:'}</Text>
 
         {restaurants.map(restaurant => (
-          <SelectionButton
+          <ToggleButton
             text={restaurant.name}
             key={restaurant.id}
             onSelect={() => {
@@ -67,7 +67,7 @@ const Suggest = ({navigation, route}) => {
         />
       </ScrollView>
       <View style={[styles.addContainer]}>
-        <Button
+        <TextButton
           text={'Add ' + String(numSelected) + ' selected'}
           onPress={() => {
             sessionStore.dispatch(addSuggestions(selected));

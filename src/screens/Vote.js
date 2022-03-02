@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
-import Button from '../components/atoms/Button';
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import DraggableFlatList from 'react-native-draggable-flatlist/src/components/DraggableFlatList';
-import Draggable from '../components/atoms/Draggable';
+import Draggable from '../components/Draggable';
 import {setWinningVote} from '../redux/actions/setWinningVote';
 import {submitBallot} from '../apis/AppSync';
 
@@ -33,7 +33,7 @@ const Vote = ({navigation}) => {
         ListFooterComponent={() => <View style={[{paddingTop: '40%'}]} />}
       />
       <View style={[styles.voteContainer]}>
-        <Button
+        <TextButton
           text={'Vote'}
           onPress={() => {
             let ballot = [];
