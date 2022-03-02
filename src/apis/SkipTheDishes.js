@@ -2,9 +2,11 @@ const axios = require('axios');
 
 const API_HOST_AND_PATH =
   'https://api.skipthedishes.com/customer/v1/graphql?isCuisineSearch=false&isSorted=false&search=';
+
 const CONST_API_HEADERS = {
   'App-Token': 'd7033722-4d2e-4263-9d67-d83854deb0fc',
 };
+
 const CONST_BODY = {
   operationName: 'QueryRestaurantsCuisinesList',
   variables: {
@@ -84,5 +86,3 @@ function fetchData(latitude, longitude, search = '') {
 }
 
 export {fetchData};
-
-// fetchData(48.4652238, -123.3084236).then(a => console.log(a));

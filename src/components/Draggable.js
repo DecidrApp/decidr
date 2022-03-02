@@ -1,6 +1,6 @@
 import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import React from 'react';
-import COLORS from '../../styles/colors';
+import COLORS from '../styles/colors';
 
 const Draggable = ({item, index, drag, isActive}) => {
   return (

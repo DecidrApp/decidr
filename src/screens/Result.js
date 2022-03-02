@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text} from 'react-native';
-import Button from '../components/atoms/Button';
+import React from 'react';
+import {SafeAreaView, StyleSheet, Text} from 'react-native';
+import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
@@ -10,14 +10,14 @@ const Result = ({navigation}) => {
     <SafeAreaView style={[styles.background]}>
       <Text style={[styles.result]}>{sessionStore.getState().winningVote}</Text>
 
-      <Button
+      <TextButton
         text={'Return to Room'}
         onPress={() => {
           navigation.navigate('Room');
         }}
       />
 
-      <Button
+      <TextButton
         text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
         onPress={() => {
           sessionStore.dispatch(resetSuggestions());

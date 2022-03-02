@@ -1,11 +1,11 @@
 import React from 'react';
 import {Text, TouchableHighlight, StyleSheet} from 'react-native';
-import COLORS from '../../styles/colors';
+import COLORS from '../styles/colors';
 
-const Button = ({text, onPress}) => (
+const TextButton = ({text, onPress, styleOverride = {}}) => (
   <TouchableHighlight
     onPress={onPress}
-    style={styles.button}
+    style={[styles.button, styleOverride]}
     activeOpacity={0.95}
     underlayColor={COLORS.PRIMARY_LIGHT}>
     <Text style={styles.buttonText}>{text}</Text>
@@ -31,4 +31,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Button;
+export default TextButton;
