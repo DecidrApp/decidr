@@ -70,3 +70,48 @@ export const listVotes = /* GraphQL */ `
     }
   }
 `;
+export const getRoomUser = /* GraphQL */ `
+  query GetRoomUser($id: ID!) {
+    getRoomUser(id: $id) {
+      id
+      room_id
+      state
+    }
+  }
+`;
+export const listRoomUsers = /* GraphQL */ `
+  query ListRoomUsers(
+    $filter: TableRoomUserFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listRoomUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        room_id
+        state
+      }
+      nextToken
+    }
+  }
+`;
+export const queryRoomUsersByRoomIdIndex = /* GraphQL */ `
+  query QueryRoomUsersByRoomIdIndex(
+    $room_id: String!
+    $first: Int
+    $after: String
+  ) {
+    queryRoomUsersByRoomIdIndex(
+      room_id: $room_id
+      first: $first
+      after: $after
+    ) {
+      items {
+        id
+        room_id
+        state
+      }
+      nextToken
+    }
+  }
+`;

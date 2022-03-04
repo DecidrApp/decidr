@@ -79,3 +79,30 @@ export const deleteVotes = /* GraphQL */ `
     }
   }
 `;
+export const createRoomUser = /* GraphQL */ `
+  mutation CreateRoomUser($input: CreateRoomUserInput!) {
+    createRoomUser(input: $input) {
+      id
+      room_id
+      state
+    }
+  }
+`;
+export const updateRoomUser = /* GraphQL */ `
+  mutation UpdateRoomUser($input: UpdateRoomUserInput!) {
+    updateRoomUser(input: $input) {
+      id
+      room_id
+      state
+    }
+  }
+`;
+export const deleteRoomUser = /* GraphQL */ `
+  mutation DeleteRoomUser($input: DeleteRoomUserInput!) {
+    deleteRoomUser(input: $input) {
+      id
+      room_id
+      state
+    }
+  }
+`;

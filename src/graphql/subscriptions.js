@@ -67,3 +67,30 @@ export const onDeleteVote = /* GraphQL */ `
     }
   }
 `;
+export const onCreateRoomUser = /* GraphQL */ `
+  subscription OnCreateRoomUser($id: ID, $room_id: String, $state: String) {
+    onCreateRoomUser(id: $id, room_id: $room_id, state: $state) {
+      id
+      room_id
+      state
+    }
+  }
+`;
+export const onUpdateRoomUser = /* GraphQL */ `
+  subscription OnUpdateRoomUser($id: ID, $room_id: String, $state: String) {
+    onUpdateRoomUser(id: $id, room_id: $room_id, state: $state) {
+      id
+      room_id
+      state
+    }
+  }
+`;
+export const onDeleteRoomUser = /* GraphQL */ `
+  subscription OnDeleteRoomUser($id: ID, $room_id: String, $state: String) {
+    onDeleteRoomUser(id: $id, room_id: $room_id, state: $state) {
+      id
+      room_id
+      state
+    }
+  }
+`;

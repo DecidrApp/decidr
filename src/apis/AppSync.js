@@ -6,6 +6,9 @@ import {
   deleteVotes,
   deleteRoom,
   updateRoom,
+  createRoomUser,
+  deleteRoomUser,
+  updateRoomUser,
 } from '../graphql/mutations';
 
 // ------------------------------------------------
@@ -17,6 +20,60 @@ function generateCode() {
     .toString(36)
     .replace(/[^a-np-z1-9]+/, '')
     .slice(0, 5);
+}
+
+// ------------------------------------------------
+// ---------------- USER OPERATIONS ---------------
+// ------------------------------------------------
+
+async function addRoomUser(code) {
+  return API.graphql(
+    graphqlOperation(createRoomUser, {
+      input: {
+        room_id: code,
+        state: 'suggesting',
+      },
+    }),
+  )
+    .then(r => {
+      return r?.data?.createRoomUser.id;
+    })
+    .catch(r => {
+      console.info(r);
+      console.warn('Unable to create room user in room ' + code);
+      return false;
+    });
+}
+
+async function removeRoomUser(user_id) {
+  return API.graphql(
+    graphqlOperation(deleteRoomUser, {
+      input: {
+        id: user_id,
+      },
+    }),
+  )
+    .then(r => {
+      return !!r?.data?.deleteRoomUser;
+    })
+    .catch(r => {
+      console.info(r);
+      console.warn('Unable to remove room user ' + user_id);
+      return false;
+    });
+}
+
+function updateRoomUserState(user_id, state) {
+  return API.graphql(
+    graphqlOperation(updateRoomUser, {
+      input: {id: user_id, state: state},
+    }),
+  ).catch(r => {
+    console.info(r);
+    console.warn(
+      'Unable to update room user ' + user_id + 'with state ' + state,
+    );
+  });
 }
 
 // ------------------------------------------------
@@ -146,4 +203,7 @@ export {
   submitBallot,
   getAllBallots,
   deleteAllBallots,
+  addRoomUser,
+  removeRoomUser,
+  updateRoomUserState,
 };
