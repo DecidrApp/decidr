@@ -1,5 +1,16 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {
+  Dimensions,
+  Image,
+  ImageBackground,
+  Keyboard,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import {setIsHost} from '../redux/actions/setIsHost';
@@ -17,13 +28,22 @@ import missingRoomCodeAlert from '../alerts/missingRoomCodeAlert';
 import joinFailureAlert from '../alerts/joinFailureAlert';
 
 const Home = ({navigation}) => {
-  const [roomCode, onChangeRoomCode] = React.useState('');
+  const [roomCode, setRoomCode] = React.useState('');
 
   requestLocation();
 
   return (
-    <SafeAreaView style={[styles.background]}>
-      <View>
+    <TouchableWithoutFeedback
+      onPress={() => {
+        Keyboard.dismiss();
+      }}
+      accessible={false}>
+      <SafeAreaView style={styles.container}>
+        <ImageBackground
+          source={require('../assets/images/escheresque_ste.png')}
+          resizeMode="repeat"
+          style={styles.background}
+        />
         <Text style={[styles.title]}>{'Decidr'}</Text>
 
         <TextButton
@@ -40,67 +60,84 @@ const Home = ({navigation}) => {
               });
           }}
         />
-        <TextInput
-          style={styles.input}
-          onChangeText={onChangeRoomCode}
-          value={roomCode}
-          placeholder={'Room Code'}
-          autoCapitalize={'none'}
-          autoCorrect={false}
-        />
-        <TextButton
-          text={'Join Room'}
-          onPress={() => {
-            if (roomCode === '') {
-              missingRoomCodeAlert();
-              return;
-            }
-            appSyncRoomExists(roomCode).then(r => {
-              if (r) {
-                getAppSyncRoom(roomCode).then(r => {
-                  sessionStore.dispatch(
-                    addSuggestions(r?.data?.getRoom?.selected),
-                  );
-                  sessionStore.dispatch(setRoomId(roomCode));
-                  sessionStore.dispatch(setIsHost(false));
-                  navigation.navigate('Room');
-                });
-              } else {
-                joinFailureAlert();
+        <View style={styles.rowContainer}>
+          <TextInput
+            style={styles.input}
+            onChangeText={setRoomCode}
+            value={roomCode}
+            textAlign={'left'}
+            placeholder={'Room Code'}
+            placeholderTextColor={COLORS.SECONDARY_LIGHT}
+            autoCapitalize={'none'}
+            autoCorrect={false}
+          />
+          <TextButton
+            text={'Join Room'}
+            styleOverride={{flex: 2}}
+            onPress={() => {
+              if (roomCode === '') {
+                missingRoomCodeAlert();
+                return;
               }
-            });
-          }}
-        />
-      </View>
-    </SafeAreaView>
+              appSyncRoomExists(roomCode).then(r => {
+                if (r) {
+                  getAppSyncRoom(roomCode).then(r => {
+                    sessionStore.dispatch(
+                      addSuggestions(r?.data?.getRoom?.selected),
+                    );
+                    sessionStore.dispatch(setRoomId(roomCode));
+                    sessionStore.dispatch(setIsHost(false));
+                    navigation.navigate('Room');
+                  });
+                } else {
+                  joinFailureAlert();
+                }
+              });
+            }}
+          />
+        </View>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
+  container: {
     flex: 1,
-    flexGrow: 10,
     paddingTop: '20%',
     paddingLeft: '10%',
     paddingRight: '10%',
-    backgroundColor: COLORS.BACKGROUND,
+  },
+  background: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
+  rowContainer: {
+    marginTop: 20,
+    flexDirection: 'row',
   },
   title: {
-    fontSize: 48,
+    fontSize: 64,
     fontWeight: '600',
+    fontFamily: 'LeagueGothic',
     textAlign: 'center',
-    marginBottom: 50,
+    marginBottom: 30,
     color: COLORS.WHITE,
   },
   input: {
-    margin: 10,
+    flex: 1,
     paddingLeft: 10,
     paddingRight: 10,
-    textAlign: 'center',
     textTransform: 'lowercase',
-    height: 30,
+    fontFamily: 'LeagueGothic',
+    fontSize: 25,
+    color: COLORS.BLACK,
     borderRadius: 10,
     backgroundColor: COLORS.WHITE,
+    marginRight: 5,
   },
 });
 
