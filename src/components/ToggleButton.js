@@ -2,8 +2,13 @@ import React, {useState} from 'react';
 import {Text, TouchableHighlight, StyleSheet, View} from 'react-native';
 import COLORS from '../styles/colors';
 
-const ToggleButton = ({text, onSelect, onDeselect}) => {
-  const [isSelected, setIsSelected] = useState(false);
+const ToggleButton = ({
+  text,
+  onSelect,
+  onDeselect,
+  alreadySelected = false,
+}) => {
+  const [isSelected, setIsSelected] = useState(alreadySelected);
 
   return (
     <TouchableHighlight
