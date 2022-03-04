@@ -39,7 +39,7 @@ const Room = ({navigation}) => {
 
   function closeRoom() {
     // If user is the host, close the room
-    removeRoomUser(roomCode);
+    removeRoomUser(sessionStore.getState().user_id);
     if (sessionStore.getState().isHost) {
       deleteAllBallots(roomCode);
       closeAppSyncRoom(roomCode);

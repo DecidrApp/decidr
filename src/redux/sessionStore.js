@@ -65,7 +65,7 @@ const reducer = (state = initialState, action) => {
     case SET_ROOM_USER_ID:
       return {
         ...state,
-        user_id: null,
+        user_id: action.payload.user_id,
       };
     default:
       return state;
