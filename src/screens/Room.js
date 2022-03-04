@@ -10,7 +10,11 @@ import {API, graphqlOperation} from 'aws-amplify';
 import {onDeleteRoom, onUpdateRoom} from '../graphql/subscriptions';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import {resetRoom} from '../redux/actions/resetRoom';
-import {closeAppSyncRoom, deleteAllBallots} from '../apis/AppSync';
+import {
+  closeAppSyncRoom,
+  deleteAllBallots,
+  removeRoomUser,
+} from '../apis/AppSync';
 import Background from '../components/Background';
 
 const Room = ({navigation}) => {
@@ -35,6 +39,7 @@ const Room = ({navigation}) => {
 
   function closeRoom() {
     // If user is the host, close the room
+    removeRoomUser(roomCode);
     if (sessionStore.getState().isHost) {
       deleteAllBallots(roomCode);
       closeAppSyncRoom(roomCode);
@@ -136,7 +141,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   roomCode: {
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 48,
     fontWeight: '600',
     textAlign: 'center',
@@ -144,7 +149,7 @@ const styles = StyleSheet.create({
     color: COLORS.WHITE,
   },
   participants: {
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 36,
     textAlign: 'center',
     marginBottom: 50,

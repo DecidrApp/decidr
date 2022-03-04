@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   result: {
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 64,
     fontWeight: '600',
     textAlign: 'center',

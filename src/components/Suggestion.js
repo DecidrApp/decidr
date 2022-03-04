@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   text: {
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 32,
     color: COLORS.WHITE,
     textAlign: 'center',

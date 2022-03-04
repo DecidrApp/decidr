@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   title: {
     paddingTop: '5%',
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 48,
     fontWeight: '600',
     textAlign: 'center',

@@ -20,6 +20,7 @@ import {
   createAppSyncRoom,
   appSyncRoomExists,
   getAppSyncRoom,
+  addRoomUser,
 } from '../apis/AppSync';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import requestLocation from '../apis/requestLocation';
@@ -27,6 +28,7 @@ import roomCreationFailureAlert from '../alerts/roomCreationFailureAlert';
 import missingRoomCodeAlert from '../alerts/missingRoomCodeAlert';
 import joinFailureAlert from '../alerts/joinFailureAlert';
 import Background from '../components/Background';
+import {setRoomUserId} from '../redux/actions/setRoomUserId';
 
 const Home = ({navigation}) => {
   const [roomCode, setRoomCode] = React.useState('');
@@ -48,9 +50,12 @@ const Home = ({navigation}) => {
           onPress={() => {
             createAppSyncRoom()
               .then(r => {
-                sessionStore.dispatch(setRoomId(r.data.createRoom.id));
-                sessionStore.dispatch(setIsHost(true));
-                navigation.navigate('Room');
+                addRoomUser(r.data.createRoom.id).then(r2 => {
+                  sessionStore.dispatch(setRoomUserId(r2));
+                  sessionStore.dispatch(setRoomId(r.data.createRoom.id));
+                  sessionStore.dispatch(setIsHost(true));
+                  navigation.navigate('Room');
+                });
               })
               .catch(() => {
                 roomCreationFailureAlert();
@@ -79,12 +84,15 @@ const Home = ({navigation}) => {
               appSyncRoomExists(roomCode).then(r => {
                 if (r) {
                   getAppSyncRoom(roomCode).then(r => {
-                    sessionStore.dispatch(
-                      addSuggestions(r?.data?.getRoom?.selected),
-                    );
-                    sessionStore.dispatch(setRoomId(roomCode));
-                    sessionStore.dispatch(setIsHost(false));
-                    navigation.navigate('Room');
+                    addRoomUser(roomCode).then(r2 => {
+                      sessionStore.dispatch(
+                        addSuggestions(r?.data?.getRoom?.selected),
+                      );
+                      sessionStore.dispatch(setRoomUserId(r2));
+                      sessionStore.dispatch(setRoomId(roomCode));
+                      sessionStore.dispatch(setIsHost(false));
+                      navigation.navigate('Room');
+                    });
                   });
                 } else {
                   joinFailureAlert();
@@ -112,7 +120,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 64,
     fontWeight: '600',
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     textAlign: 'center',
     marginBottom: 30,
     color: COLORS.WHITE,
@@ -122,7 +130,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     textTransform: 'lowercase',
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 25,
     color: COLORS.BLACK,
     borderRadius: 10,

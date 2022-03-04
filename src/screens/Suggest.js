@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   title: {
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 48,
     fontWeight: '600',
     textAlign: 'center',
