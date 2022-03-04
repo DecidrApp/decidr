@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';

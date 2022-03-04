@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import TextButton from '../components/TextButton';
@@ -22,6 +23,7 @@ const Suggest = ({navigation, route}) => {
   const [selected, setSelected] = useState([]);
   const [numSelected, setNumSelected] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchRestaurants = () => {
     const long = sessionStore.getState().longitude;
@@ -58,19 +60,36 @@ const Suggest = ({navigation, route}) => {
         showsHorizontalScrollIndicator={false}>
         <Text style={[styles.title]}>{'Suggest'}</Text>
 
+        <TextInput
+          style={styles.input}
+          onChangeText={setSearchTerm}
+          value={searchTerm}
+          textAlign={'left'}
+          placeholder={'Search / Add Custom'}
+          placeholderTextColor={COLORS.SECONDARY_LIGHT}
+          autoCorrect={false}
+        />
+
         {loading && <ActivityIndicator size={'large'} color={COLORS.WHITE} />}
-        {restaurants.map(restaurant => (
-          <ToggleButton
-            text={restaurant.name}
-            key={restaurant.id}
-            onSelect={() => {
-              suggestionSelected(restaurant.name);
-            }}
-            onDeselect={() => {
-              suggestionDeselected(restaurant.name);
-            }}
-          />
-        ))}
+        {restaurants.map(restaurant => {
+          if (
+            !restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
+          ) {
+            return null;
+          }
+          return (
+            <ToggleButton
+              text={restaurant.name}
+              key={restaurant.id}
+              onSelect={() => {
+                suggestionSelected(restaurant.name);
+              }}
+              onDeselect={() => {
+                suggestionDeselected(restaurant.name);
+              }}
+            />
+          );
+        })}
 
         <View
           style={[
@@ -120,6 +139,17 @@ const styles = StyleSheet.create({
     paddingTop: '10%',
     marginBottom: 20,
     color: COLORS.WHITE,
+  },
+  input: {
+    flex: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    marginBottom: 20,
+    fontFamily: 'LeagueGothic',
+    fontSize: 25,
+    color: COLORS.BLACK,
+    borderRadius: 10,
+    backgroundColor: COLORS.WHITE,
   },
   addContainer: {
     position: 'absolute',
