@@ -11,6 +11,7 @@ import {onDeleteRoom, onUpdateRoom} from '../graphql/subscriptions';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import {resetRoom} from '../redux/actions/resetRoom';
 import {closeAppSyncRoom, deleteAllBallots} from '../apis/AppSync';
+import Background from '../components/Background';
 
 const Room = ({navigation}) => {
   const [roomCode, setRoomCode] = useState('?????');
@@ -80,7 +81,9 @@ const Room = ({navigation}) => {
   }, []);
 
   return (
-    <SafeAreaView style={[styles.background]}>
+    <SafeAreaView style={[styles.container]}>
+      <Background />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
@@ -97,19 +100,23 @@ const Room = ({navigation}) => {
       </ScrollView>
 
       <View style={[styles.buttonContainer]}>
-        <TextButton
-          text={'Add Suggestion'}
-          onPress={() => {
-            navigation.navigate('Suggest');
-          }}
-        />
+        <View style={[styles.rowContainer]}>
+          <TextButton
+            text={'Suggest'}
+            styleOverride={{flex: 1, marginRight: 5}}
+            onPress={() => {
+              navigation.navigate('Suggest');
+            }}
+          />
 
-        <TextButton
-          text={'Vote'}
-          onPress={() => {
-            navigation.navigate('Vote');
-          }}
-        />
+          <TextButton
+            text={'Vote'}
+            styleOverride={{flex: 1, marginLeft: 5}}
+            onPress={() => {
+              navigation.navigate('Vote');
+            }}
+          />
+        </View>
 
         <TextButton
           text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
@@ -121,23 +128,24 @@ const Room = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  background: {
+  container: {
     flex: 1,
-    flexGrow: 10,
+    flexGrow: 1,
     paddingLeft: '10%',
     paddingRight: '10%',
     backgroundColor: COLORS.BACKGROUND,
   },
   roomCode: {
-    fontSize: 32,
+    fontFamily: 'LeagueGothic',
+    fontSize: 48,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: 5,
-    paddingTop: '10%',
+    paddingTop: '5%',
     color: COLORS.WHITE,
   },
   participants: {
-    fontSize: 24,
+    fontFamily: 'LeagueGothic',
+    fontSize: 36,
     textAlign: 'center',
     marginBottom: 50,
     color: COLORS.WHITE,
@@ -145,8 +153,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: 'absolute',
     alignSelf: 'center',
-    bottom: '0%',
+    paddingLeft: 5,
+    paddingRight: 5,
+    bottom: '5%',
     width: '100%',
+  },
+  rowContainer: {
+    marginBottom: 10,
+    flexDirection: 'row',
   },
 });
 

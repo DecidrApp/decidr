@@ -20,13 +20,13 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 20,
     paddingRight: 20,
-    marginBottom: 10,
     borderRadius: 10,
     borderColor: COLORS.PRIMARY_DARK,
     borderBottomWidth: 2,
   },
   buttonText: {
-    fontSize: 32,
+    fontSize: 40,
+    fontFamily: 'LeagueGothic',
     color: COLORS.WHITE,
   },
 });

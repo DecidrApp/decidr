@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Text} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
@@ -12,6 +12,7 @@ import {
   updateRoomState,
 } from '../apis/AppSync';
 import {resetRoom} from '../redux/actions/resetRoom';
+import Background from '../components/Background';
 
 const Result = ({navigation}) => {
   function closeRoom() {
@@ -61,24 +62,29 @@ const Result = ({navigation}) => {
   });
 
   return (
-    <SafeAreaView style={[styles.background]}>
-      <Text style={[styles.result]}>{sessionStore.getState().winningVote}</Text>
+    <SafeAreaView style={styles.background}>
+      <Background />
 
-      <TextButton
-        text={'Return to Room'}
-        onPress={() => {
-          if (sessionStore.getState().isHost) {
-            updateRoomState(sessionStore.getState().room_id, 'open');
-            deleteAllBallots(sessionStore.getState().room_id);
-          }
-          navigation.navigate('Room');
-        }}
-      />
+      <Text style={styles.result}>{sessionStore.getState().winningVote}</Text>
 
-      <TextButton
-        text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
-        onPress={closeRoom}
-      />
+      <View style={styles.buttonContainer}>
+        <TextButton
+          text={'Return to Room'}
+          styleOverride={{marginBottom: 10}}
+          onPress={() => {
+            if (sessionStore.getState().isHost) {
+              updateRoomState(sessionStore.getState().room_id, 'open');
+              deleteAllBallots(sessionStore.getState().room_id);
+            }
+            navigation.navigate('Room');
+          }}
+        />
+
+        <TextButton
+          text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
+          onPress={closeRoom}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -92,11 +98,19 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   result: {
-    fontSize: 48,
+    fontFamily: 'LeagueGothic',
+    fontSize: 64,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: '90%',
     color: COLORS.WHITE,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    paddingLeft: 5,
+    paddingRight: 5,
+    bottom: '5%',
+    width: '100%',
   },
 });
 

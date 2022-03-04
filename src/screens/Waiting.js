@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, StyleSheet, Text} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
@@ -12,6 +12,7 @@ import {
 } from '../apis/AppSync';
 import {calculateRanking} from '../apis/Voting';
 import {setWinningVote} from '../redux/actions/setWinningVote';
+import Background from '../components/Background';
 
 const Waiting = ({navigation, route}) => {
   // TODO: Hosts votes are only calculated once another vote comes into the DB
@@ -33,6 +34,17 @@ const Waiting = ({navigation, route}) => {
       );
       navigation.navigate('Result');
     }
+  }
+
+  function closeVoting() {
+    const result = calculateRanking(
+      sessionStore.getState().suggestions,
+      votes.map(v => v.ranking),
+    );
+    updateRoomWinner(sessionStore.getState().room_id, result[0]).then(() => {
+      updateRoomState(sessionStore.getState().room_id, 'result');
+    });
+    sessionStore.dispatch(setWinningVote(result[0]));
   }
 
   useEffect(() => {
@@ -62,32 +74,16 @@ const Waiting = ({navigation, route}) => {
     };
   });
 
-  const closeButton = () => {
-    if (sessionStore.getState().isHost) {
-      return (
-        <TextButton
-          text={'Close Voting'}
-          onPress={() => {
-            const result = calculateRanking(
-              sessionStore.getState().suggestions,
-              votes.map(v => v.ranking),
-            );
-            updateRoomWinner(sessionStore.getState().room_id, result[0]).then(
-              () => {
-                updateRoomState(sessionStore.getState().room_id, 'result');
-              },
-            );
-            sessionStore.dispatch(setWinningVote(result[0]));
-          }}
-        />
-      );
-    }
-  };
-
   return (
     <SafeAreaView style={[styles.background]}>
-      <Text>Waiting</Text>
-      {closeButton()}
+      <Background />
+
+      <Text style={styles.title}>Waiting for votes to come in!</Text>
+      {sessionStore.getState().isHost && (
+        <View style={styles.buttonContainer}>
+          <TextButton text={'Close Voting'} onPress={() => closeVoting()} />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -101,17 +97,21 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   title: {
-    fontSize: 32,
+    fontFamily: 'LeagueGothic',
+    fontSize: 52,
     fontWeight: '600',
     textAlign: 'center',
-    paddingTop: '10%',
+    paddingTop: '30%',
     marginBottom: 20,
     color: COLORS.WHITE,
   },
-  addContainer: {
+  buttonContainer: {
     position: 'absolute',
     alignSelf: 'center',
+    paddingLeft: 5,
+    paddingRight: 5,
     bottom: '5%',
+    width: '100%',
   },
 });
 
