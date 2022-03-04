@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import ToggleButton from '../components/ToggleButton';
@@ -8,11 +15,13 @@ import {addSuggestions} from '../redux/actions/addSuggestions';
 import {fetchData} from '../apis/SkipTheDishes';
 import {API, graphqlOperation} from 'aws-amplify';
 import {updateRoom} from '../graphql/mutations';
+import Background from '../components/Background';
 
 const Suggest = ({navigation, route}) => {
   const [restaurants, setRestaurants] = useState([]);
   const [selected, setSelected] = useState([]);
   const [numSelected, setNumSelected] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const fetchRestaurants = () => {
     const long = sessionStore.getState().longitude;
@@ -23,11 +32,13 @@ const Suggest = ({navigation, route}) => {
         // TODO: How many to render? Load on scroll?
         // TODO: I think this might be causing a memory leak
         setRestaurants(x.slice(0, 10));
+        setLoading(false);
       });
     }
   };
   fetchRestaurants();
 
+  //TODO: I'm noticing some lag when selecting, seems to increase with # selected
   const suggestionSelected = name => {
     setNumSelected(numSelected + 1);
     setSelected([...selected, name]);
@@ -40,11 +51,14 @@ const Suggest = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={[styles.background]}>
+      <Background />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
-        <Text style={[styles.title]}>{'Add Suggestions:'}</Text>
+        <Text style={[styles.title]}>{'Suggest'}</Text>
 
+        {loading && <ActivityIndicator size={'large'} color={COLORS.WHITE} />}
         {restaurants.map(restaurant => (
           <ToggleButton
             text={restaurant.name}
@@ -99,7 +113,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   title: {
-    fontSize: 32,
+    fontFamily: 'LeagueGothic',
+    fontSize: 48,
     fontWeight: '600',
     textAlign: 'center',
     paddingTop: '10%',

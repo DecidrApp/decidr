@@ -12,13 +12,15 @@ const styles = StyleSheet.create({
   suggestion: {
     alignItems: 'center',
     backgroundColor: COLORS.SECONDARY,
-    padding: 20,
+    padding: 10,
     marginBottom: 20,
     borderRadius: 10,
   },
   text: {
+    fontFamily: 'LeagueGothic',
     fontSize: 32,
     color: COLORS.WHITE,
+    textAlign: 'center',
   },
 });
 

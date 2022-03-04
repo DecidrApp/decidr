@@ -37,12 +37,13 @@ const ToggleButton = ({text, onSelect, onDeselect}) => {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: COLORS.SECONDARY_DARK,
-    padding: 20,
-    marginBottom: 20,
+    padding: 10,
+    marginBottom: 10,
     borderRadius: 10,
   },
   buttonText: {
-    fontSize: 32,
+    fontFamily: 'LeagueGothic',
+    fontSize: 30,
     flex: 1,
     color: COLORS.WHITE,
     marginRight: 20,
@@ -55,13 +56,13 @@ const styles = StyleSheet.create({
     borderColor: COLORS.WHITE,
     borderWidth: 2,
     borderRadius: 5,
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
   },
   toggleOn: {
     backgroundColor: COLORS.WHITE,
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
     margin: 3,
   },
 });

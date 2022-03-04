@@ -6,6 +6,7 @@ import sessionStore from '../redux/sessionStore';
 import DraggableFlatList from 'react-native-draggable-flatlist/src/components/DraggableFlatList';
 import Draggable from '../components/Draggable';
 import {submitBallot} from '../apis/AppSync';
+import Background from '../components/Background';
 
 const Vote = ({navigation}) => {
   const listData = sessionStore.getState().suggestions.map(suggestion => {
@@ -19,6 +20,8 @@ const Vote = ({navigation}) => {
 
   return (
     <SafeAreaView style={[styles.background]}>
+      <Background />
+
       <DraggableFlatList
         data={options}
         onDragEnd={({data}) => {
@@ -28,7 +31,7 @@ const Vote = ({navigation}) => {
         renderItem={Draggable}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        ListHeaderComponent={() => <Text style={[styles.title]}>Vote: </Text>}
+        ListHeaderComponent={() => <Text style={[styles.title]}>Vote</Text>}
         ListFooterComponent={() => <View style={[{paddingTop: '40%'}]} />}
       />
       <View style={[styles.voteContainer]}>
@@ -60,11 +63,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   title: {
-    paddingTop: '10%',
-    fontSize: 32,
+    paddingTop: '5%',
+    fontFamily: 'LeagueGothic',
+    fontSize: 48,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: 20,
     color: COLORS.WHITE,
   },
   voteContainer: {

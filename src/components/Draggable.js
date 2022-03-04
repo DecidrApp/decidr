@@ -34,18 +34,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   indexText: {
+    fontFamily: 'LeagueGothic',
     fontSize: 32,
     marginTop: -17,
     marginRight: 10,
     color: COLORS.WHITE,
   },
   touchable: {
-    padding: 20,
+    padding: 10,
     marginBottom: 20,
     borderRadius: 10,
     flexGrow: 1,
   },
   text: {
+    fontFamily: 'LeagueGothic',
     fontSize: 32,
     color: COLORS.WHITE,
     flex: 1,

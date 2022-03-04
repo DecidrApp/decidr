@@ -26,6 +26,7 @@ import requestLocation from '../apis/requestLocation';
 import roomCreationFailureAlert from '../alerts/roomCreationFailureAlert';
 import missingRoomCodeAlert from '../alerts/missingRoomCodeAlert';
 import joinFailureAlert from '../alerts/joinFailureAlert';
+import Background from '../components/Background';
 
 const Home = ({navigation}) => {
   const [roomCode, setRoomCode] = React.useState('');
@@ -39,11 +40,7 @@ const Home = ({navigation}) => {
       }}
       accessible={false}>
       <SafeAreaView style={styles.container}>
-        <ImageBackground
-          source={require('../assets/images/escheresque_ste.png')}
-          resizeMode="repeat"
-          style={styles.background}
-        />
+        <Background />
         <Text style={[styles.title]}>{'Decidr'}</Text>
 
         <TextButton
@@ -107,13 +104,6 @@ const styles = StyleSheet.create({
     paddingTop: '20%',
     paddingLeft: '10%',
     paddingRight: '10%',
-  },
-  background: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
   },
   rowContainer: {
     marginTop: 20,
