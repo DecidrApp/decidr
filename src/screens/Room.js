@@ -12,6 +12,7 @@ import {
   onDeleteRoom,
   onDeleteRoomUser,
   onUpdateRoom,
+  onUpdateRoomUser,
 } from '../graphql/subscriptions';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import {resetRoom} from '../redux/actions/resetRoom';
@@ -21,6 +22,7 @@ import {
   getAllUsersForRoom,
   getAppSyncRoom,
   removeRoomUser,
+  updateRoomState,
   updateRoomUserState,
 } from '../apis/AppSync';
 import Background from '../components/Background';
@@ -76,6 +78,23 @@ const Room = ({navigation}) => {
 
   // SETUP SUBSCRIPTIONS
   useEffect(() => {
+    // Helper function for when users join or leave
+    const updateUsers = () => {
+      getAllUsersForRoom(roomCode).then(r => {
+        const users = r ?? [];
+        setUsers(users);
+        setNumParticipants(users.length);
+
+        if (
+          sessionStore.getState().isHost &&
+          !users.some(a => a?.state !== 'ready')
+        ) {
+          // All users are ready
+          updateRoomState(roomCode, 'voting');
+        }
+      });
+    };
+
     // On Room Updated
     const updateRoomSub = API.graphql(
       graphqlOperation(onUpdateRoom, {id: sessionStore.getState().room_id}),
@@ -103,13 +122,7 @@ const Room = ({navigation}) => {
         room_id: roomCode,
       }),
     ).subscribe({
-      next: r => {
-        console.log('new user joined');
-        getAllUsersForRoom(roomCode).then(r => {
-          setUsers(r ?? []);
-          setNumParticipants((r ?? []).length);
-        });
-      },
+      next: updateUsers,
       error: error => console.warn(error),
     });
 
@@ -119,13 +132,17 @@ const Room = ({navigation}) => {
         room_id: roomCode,
       }),
     ).subscribe({
-      next: () => {
-        console.log('user left');
-        getAllUsersForRoom(roomCode).then(r => {
-          setUsers(r ?? []);
-          setNumParticipants((r ?? []).length);
-        });
-      },
+      next: updateUsers,
+      error: error => console.warn(error),
+    });
+
+    // On a user updating their state
+    const updateUserSub = API.graphql(
+      graphqlOperation(onUpdateRoomUser, {
+        room_id: roomCode,
+      }),
+    ).subscribe({
+      next: updateUsers,
       error: error => console.warn(error),
     });
 
@@ -146,6 +163,7 @@ const Room = ({navigation}) => {
       updateRoomSub.unsubscribe();
       newUserSub.unsubscribe();
       deleteUserSub.unsubscribe();
+      updateUserSub.unsubscribe();
       deleteSub.unsubscribe();
     };
   }, [roomCode, navigation, userId]);

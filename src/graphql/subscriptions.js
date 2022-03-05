@@ -77,8 +77,8 @@ export const onCreateRoomUser = /* GraphQL */ `
   }
 `;
 export const onUpdateRoomUser = /* GraphQL */ `
-  subscription OnUpdateRoomUser($id: ID, $room_id: String, $state: String) {
-    onUpdateRoomUser(id: $id, room_id: $room_id, state: $state) {
+  subscription OnUpdateRoomUser($room_id: String) {
+    onUpdateRoomUser(room_id: $room_id) {
       id
       room_id
       state
