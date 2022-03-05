@@ -96,16 +96,8 @@ export const listRoomUsers = /* GraphQL */ `
   }
 `;
 export const queryRoomUsersByRoomIdIndex = /* GraphQL */ `
-  query QueryRoomUsersByRoomIdIndex(
-    $room_id: String!
-    $first: Int
-    $after: String
-  ) {
-    queryRoomUsersByRoomIdIndex(
-      room_id: $room_id
-      first: $first
-      after: $after
-    ) {
+  query QueryRoomUsersByRoomIdIndex($room_id: String!) {
+    queryRoomUsersByRoomIdIndex(room_id: $room_id) {
       items {
         id
         room_id

@@ -1,5 +1,9 @@
 import {API, graphqlOperation} from 'aws-amplify';
-import {getRoom, getVotesForRoom} from '../graphql/queries';
+import {
+  getRoom,
+  getVotesForRoom,
+  queryRoomUsersByRoomIdIndex,
+} from '../graphql/queries';
 import {
   createRoom,
   createVote,
@@ -25,6 +29,22 @@ function generateCode() {
 // ------------------------------------------------
 // ---------------- USER OPERATIONS ---------------
 // ------------------------------------------------
+
+async function getAllUsersForRoom(code) {
+  await API.graphql(
+    graphqlOperation(queryRoomUsersByRoomIdIndex, {
+      room_id: code,
+    }),
+  )
+    .then(r => {
+      return r?.data?.queryRoomUsersByRoomIdIndex;
+    })
+    .catch(r => {
+      console.info(r);
+      console.warn('Unable to fetch all room users in room ' + code);
+      return [];
+    });
+}
 
 async function addRoomUser(code) {
   return API.graphql(
@@ -202,4 +222,5 @@ export {
   addRoomUser,
   removeRoomUser,
   updateRoomUserState,
+  getAllUsersForRoom,
 };

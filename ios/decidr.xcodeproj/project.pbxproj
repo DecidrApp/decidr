@@ -31,7 +31,7 @@
 		00E356EE1AD99517003FC87E /* decidrTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = decidrTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* decidrTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = decidrTests.m; sourceTree = "<group>"; };
-		0DE06843DD494DFD9DB57023 /* LeagueGothic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = LeagueGothic.ttf; path = ../src/assets/fonts/LeagueGothic.ttf; sourceTree = "<group>"; };
+		0DE06843DD494DFD9DB57023 /* LeagueGothic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = LeagueGothic.ttf; path = ../src/assets/fonts/LeagueGothic.ttf; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* decidr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = decidr.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = decidr/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = decidr/AppDelegate.m; sourceTree = "<group>"; };
@@ -114,7 +114,6 @@
 				0DE06843DD494DFD9DB57023 /* LeagueGothic.ttf */,
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -444,6 +443,7 @@
 			baseConfigurationReference = 17CC7C9D729EA97CC55CE8FF /* Pods-decidr-decidrTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = MS6JTHQG9Z;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -472,6 +472,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = MS6JTHQG9Z;
 				INFOPLIST_FILE = decidrTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (

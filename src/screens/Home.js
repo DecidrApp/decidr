@@ -35,6 +35,43 @@ const Home = ({navigation}) => {
 
   requestLocation();
 
+  function hostRoom() {
+    createAppSyncRoom()
+      .then(r => {
+        addRoomUser(r.data.createRoom.id).then(r2 => {
+          sessionStore.dispatch(setRoomUserId(r2));
+          sessionStore.dispatch(setRoomId(r.data.createRoom.id));
+          sessionStore.dispatch(setIsHost(true));
+          navigation.navigate('Room');
+        });
+      })
+      .catch(() => {
+        roomCreationFailureAlert();
+      });
+  }
+
+  function joinRoom() {
+    if (roomCode === '') {
+      missingRoomCodeAlert();
+      return;
+    }
+    appSyncRoomExists(roomCode).then(r => {
+      if (r) {
+        getAppSyncRoom(roomCode).then(r => {
+          addRoomUser(roomCode).then(r2 => {
+            sessionStore.dispatch(addSuggestions(r?.data?.getRoom?.selected));
+            sessionStore.dispatch(setRoomUserId(r2));
+            sessionStore.dispatch(setRoomId(roomCode));
+            sessionStore.dispatch(setIsHost(false));
+            navigation.navigate('Room');
+          });
+        });
+      } else {
+        joinFailureAlert();
+      }
+    });
+  }
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
@@ -45,23 +82,7 @@ const Home = ({navigation}) => {
         <Background />
         <Text style={[styles.title]}>{'Decidr'}</Text>
 
-        <TextButton
-          text={'Host Room'}
-          onPress={() => {
-            createAppSyncRoom()
-              .then(r => {
-                addRoomUser(r.data.createRoom.id).then(r2 => {
-                  sessionStore.dispatch(setRoomUserId(r2));
-                  sessionStore.dispatch(setRoomId(r.data.createRoom.id));
-                  sessionStore.dispatch(setIsHost(true));
-                  navigation.navigate('Room');
-                });
-              })
-              .catch(() => {
-                roomCreationFailureAlert();
-              });
-          }}
-        />
+        <TextButton text={'Host Room'} onPress={hostRoom} />
         <View style={styles.rowContainer}>
           <TextInput
             style={styles.input}
@@ -76,29 +97,7 @@ const Home = ({navigation}) => {
           <TextButton
             text={'Join Room'}
             styleOverride={{flex: 2}}
-            onPress={() => {
-              if (roomCode === '') {
-                missingRoomCodeAlert();
-                return;
-              }
-              appSyncRoomExists(roomCode).then(r => {
-                if (r) {
-                  getAppSyncRoom(roomCode).then(r => {
-                    addRoomUser(roomCode).then(r2 => {
-                      sessionStore.dispatch(
-                        addSuggestions(r?.data?.getRoom?.selected),
-                      );
-                      sessionStore.dispatch(setRoomUserId(r2));
-                      sessionStore.dispatch(setRoomId(roomCode));
-                      sessionStore.dispatch(setIsHost(false));
-                      navigation.navigate('Room');
-                    });
-                  });
-                } else {
-                  joinFailureAlert();
-                }
-              });
-            }}
+            onPress={joinRoom}
           />
         </View>
       </SafeAreaView>

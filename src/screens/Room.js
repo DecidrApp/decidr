@@ -7,37 +7,63 @@ import sessionStore from '../redux/sessionStore';
 import {useIsFocused} from '@react-navigation/native';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
 import {API, graphqlOperation} from 'aws-amplify';
-import {onDeleteRoom, onUpdateRoom} from '../graphql/subscriptions';
+import {
+  onCreateRoomUser,
+  onDeleteRoom,
+  onUpdateRoom,
+} from '../graphql/subscriptions';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import {resetRoom} from '../redux/actions/resetRoom';
 import {
   closeAppSyncRoom,
   deleteAllBallots,
+  getAllUsersForRoom,
+  getAppSyncRoom,
   removeRoomUser,
+  updateRoomUserState,
 } from '../apis/AppSync';
 import Background from '../components/Background';
 
 const Room = ({navigation}) => {
+  // Setup States
   const [roomCode, setRoomCode] = useState('?????');
-  const [suggestions, setSuggestions] = useState(
-    sessionStore.getState().suggestions,
-  );
-  const [numParticipants] = useState(1);
+  const [userId, setUserId] = useState('');
+  const [userState, setUserState] = useState('suggesting');
+  const [suggestions, setSuggestions] = useState([]);
+  const [users, setUsers] = useState([]);
   const isFocused = useIsFocused(); // Force re-render
 
-  function onRoomUpdate(roomData) {
-    // TODO: There should probably be some more checking here to prevent
-    //       race conditions.
-    if (roomData?.value?.data?.onUpdateRoom?.selected) {
-      // Updates are coming through, but screen is not re-rendering
-      setSuggestions(roomData?.value?.data?.onUpdateRoom?.selected);
-      sessionStore.dispatch(
-        addSuggestions(roomData?.value?.data?.onUpdateRoom?.selected),
-      );
-    }
+  // Calculate number of participants
+  function numParticipants() {
+    return users.length;
   }
 
-  function closeRoom() {
+  // ON LOAD
+  useEffect(() => {
+    // Save room code into local state
+    if (sessionStore.getState().room_id) {
+      setRoomCode(sessionStore.getState().room_id);
+    }
+
+    // Save user id into local state
+    if (sessionStore.getState().user_id) {
+      setUserId(sessionStore.getState().user_id);
+    }
+
+    // Fetch existing suggestions and users
+    getAppSyncRoom(roomCode)
+      .then(r => {
+        const selected = r?.data?.getRoom?.selected;
+        setSuggestions(selected ?? []);
+        sessionStore.dispatch(addSuggestions(selected ?? []));
+        return getAllUsersForRoom(roomCode);
+      })
+      .then(r => {
+        setUsers(r ?? []);
+      });
+  }, [roomCode]);
+
+  function closeLeaveRoom() {
     // If user is the host, close the room
     removeRoomUser(sessionStore.getState().user_id);
     if (sessionStore.getState().isHost) {
@@ -50,40 +76,61 @@ const Room = ({navigation}) => {
     navigation.navigate('Home');
   }
 
+  // SETUP SUBSCRIPTIONS (WILL RUN ONCE)
   useEffect(() => {
-    // Get room code from redux for display
-    if (sessionStore.getState().room_id) {
-      setRoomCode(sessionStore.getState().room_id);
-    }
-
-    const updateSub = API.graphql(
+    // On Room Updated
+    const updateRoomSub = API.graphql(
       graphqlOperation(onUpdateRoom, {id: sessionStore.getState().room_id}),
     ).subscribe({
-      next: onRoomUpdate,
-      error: error => console.warn(error),
-    });
+      next: data => {
+        // Update selections with value in the DB
+        const selected = data?.value?.data?.onUpdateRoom?.selected;
+        setSuggestions(selected ?? []);
+        sessionStore.dispatch(addSuggestions(selected ?? []));
 
-    const deleteSub = API.graphql(
-      graphqlOperation(onDeleteRoom, {id: sessionStore.getState().room_id}),
-    ).subscribe({
-      next: roomData => {
-        // TODO: There should probably be some more checking here to prevent
-        //       race conditions.
-        if (roomData?.value?.data?.onUpdateRoom?.selected) {
-          setSuggestions(roomData?.value?.data?.onUpdateRoom?.selected);
-          sessionStore.dispatch(
-            addSuggestions(roomData?.value?.data?.onUpdateRoom?.selected),
-          );
+        // If the state of the room changes to voting, update user state and
+        // transition.
+        const roomState = data?.value?.data?.onUpdateRoom?.state;
+        if (roomState === 'voting') {
+          updateRoomUserState(userId, 'voting');
+          navigation.navigate('Vote');
         }
       },
       error: error => console.warn(error),
     });
 
+    // On a new user joining the room
+    const newUserSub = API.graphql(
+      graphqlOperation(onCreateRoomUser, {
+        room_id: sessionStore.getState().room_id,
+      }),
+    ).subscribe({
+      next: r => {
+        console.log('new user joined');
+        console.log(r);
+      },
+      error: error => console.warn(error),
+    });
+
+    // On room deletion by host
+    const deleteSub = API.graphql(
+      graphqlOperation(onDeleteRoom, {id: sessionStore.getState().room_id}),
+    ).subscribe({
+      next: () => {
+        removeRoomUser(sessionStore.getState().user_id);
+        sessionStore.dispatch(resetSuggestions());
+        sessionStore.dispatch(resetRoom());
+        navigation.navigate('Home');
+      },
+      error: error => console.warn(error),
+    });
+
     return () => {
-      updateSub.unsubscribe();
+      updateRoomSub.unsubscribe();
+      newUserSub.unsubscribe();
       deleteSub.unsubscribe();
     };
-  }, []);
+  }, [roomCode, navigation, userId]);
 
   return (
     <SafeAreaView style={[styles.container]}>
@@ -94,7 +141,7 @@ const Room = ({navigation}) => {
         showsHorizontalScrollIndicator={false}>
         <Text style={[styles.roomCode]}>{'Room Code: ' + roomCode}</Text>
         <Text style={[styles.participants]}>
-          {String(numParticipants) + ' participants'}
+          {String(numParticipants()) + ' participants'}
         </Text>
 
         {suggestions.map(suggestion => (
@@ -115,17 +162,23 @@ const Room = ({navigation}) => {
           />
 
           <TextButton
-            text={'Vote'}
+            text={userState === 'suggesting' ? 'Ready' : 'Unready'}
             styleOverride={{flex: 1, marginLeft: 5}}
             onPress={() => {
-              navigation.navigate('Vote');
+              if (userState === 'suggesting') {
+                updateRoomUserState(userId, 'ready');
+                setUserState('ready');
+              } else {
+                updateRoomUserState(userId, 'suggesting');
+                setUserState('suggesting');
+              }
             }}
           />
         </View>
 
         <TextButton
           text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
-          onPress={closeRoom}
+          onPress={closeLeaveRoom}
         />
       </View>
     </SafeAreaView>
