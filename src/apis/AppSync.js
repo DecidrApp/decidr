@@ -23,7 +23,7 @@ function generateCode() {
   return Math.random()
     .toString(36)
     .replace(/[^a-np-z1-9]+/, '')
-    .slice(0, 5);
+    .slice(0, 3);
 }
 
 // ------------------------------------------------
@@ -155,7 +155,7 @@ function updateRoomState(code, state) {
 function updateRoomWinner(code, winner) {
   return API.graphql(
     graphqlOperation(updateRoom, {
-      input: {id: code, winner: winner},
+      input: {id: code, winner: winner, state: 'result'},
     }),
   ).catch(r => {
     console.info(r);

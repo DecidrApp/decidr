@@ -9,14 +9,19 @@ import {onDeleteRoom, onUpdateRoom} from '../graphql/subscriptions';
 import {
   closeAppSyncRoom,
   deleteAllBallots,
+  getAppSyncRoom,
+  removeRoomUser,
   updateRoomState,
+  updateRoomUserState,
 } from '../apis/AppSync';
 import {resetRoom} from '../redux/actions/resetRoom';
 import Background from '../components/Background';
+import {setWinningVote} from '../redux/actions/setWinningVote';
 
 const Result = ({navigation}) => {
-  function closeRoom() {
+  function closeLeaveRoom() {
     // If user is the host, close the room
+    removeRoomUser(sessionStore.getState().user_id);
     if (sessionStore.getState().isHost) {
       deleteAllBallots(sessionStore.getState().room_id);
       closeAppSyncRoom(sessionStore.getState().room_id);
@@ -27,13 +32,8 @@ const Result = ({navigation}) => {
     navigation.navigate('Home');
   }
 
-  function onRoomUpdate(roomData) {
-    if (roomData?.value?.data?.onUpdateRoom?.state === 'open') {
-      navigation.navigate('Room');
-    }
-  }
-
   useEffect(() => {
+    // Listen for host closing the voting period and closing room
     const deleteSub = API.graphql(
       graphqlOperation(onDeleteRoom, {id: sessionStore.getState().room_id}),
     ).subscribe({
@@ -45,13 +45,18 @@ const Result = ({navigation}) => {
       error: error => console.warn(error),
     });
 
-    // Listen for host closing the voting period
+    // Listen for host closing the voting period and returning to room
     const updateRoom = API.graphql(
       graphqlOperation(onUpdateRoom, {
         id: sessionStore.getState().room_id,
       }),
     ).subscribe({
-      next: onRoomUpdate,
+      next: roomData => {
+        if (roomData?.value?.data?.onUpdateRoom?.state === 'open') {
+          updateRoomUserState(sessionStore.getState().user_id, 'suggesting');
+          navigation.navigate('Room');
+        }
+      },
       error: error => console.warn(error),
     });
 
@@ -59,7 +64,7 @@ const Result = ({navigation}) => {
       deleteSub.unsubscribe();
       updateRoom.unsubscribe();
     };
-  });
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.background}>
@@ -68,21 +73,22 @@ const Result = ({navigation}) => {
       <Text style={styles.result}>{sessionStore.getState().winningVote}</Text>
 
       <View style={styles.buttonContainer}>
-        <TextButton
-          text={'Return to Room'}
-          styleOverride={{marginBottom: 10}}
-          onPress={() => {
-            if (sessionStore.getState().isHost) {
-              updateRoomState(sessionStore.getState().room_id, 'open');
-              deleteAllBallots(sessionStore.getState().room_id);
-            }
-            navigation.navigate('Room');
-          }}
-        />
+        {sessionStore.getState().isHost && (
+          <TextButton
+            text={'Return all to Room'}
+            styleOverride={{marginBottom: 10}}
+            onPress={() => {
+              if (sessionStore.getState().isHost) {
+                updateRoomState(sessionStore.getState().room_id, 'open');
+                deleteAllBallots(sessionStore.getState().room_id);
+              }
+            }}
+          />
+        )}
 
         <TextButton
           text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
-          onPress={closeRoom}
+          onPress={closeLeaveRoom}
         />
       </View>
     </SafeAreaView>

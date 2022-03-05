@@ -29,8 +29,8 @@ import Background from '../components/Background';
 
 const Room = ({navigation}) => {
   // Setup States
-  const [roomCode, setRoomCode] = useState('?????');
-  const [userId, setUserId] = useState('');
+  const [roomCode, setRoomCode] = useState(sessionStore.getState().room_id);
+  const [userId, setUserId] = useState(sessionStore.getState().user_id);
   const [userState, setUserState] = useState('suggesting');
   const [suggestions, setSuggestions] = useState([]);
   const [users, setUsers] = useState([]);
@@ -39,16 +39,6 @@ const Room = ({navigation}) => {
 
   // ON LOAD (WILL ONLY RUN ONCE)
   useEffect(() => {
-    // Save room code into local state
-    if (sessionStore.getState().room_id) {
-      setRoomCode(sessionStore.getState().room_id);
-    }
-
-    // Save user id into local state
-    if (sessionStore.getState().user_id) {
-      setUserId(sessionStore.getState().user_id);
-    }
-
     // Fetch existing suggestions and users
     getAppSyncRoom(sessionStore.getState().room_id)
       .then(r => {

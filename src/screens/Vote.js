@@ -5,7 +5,7 @@ import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import DraggableFlatList from 'react-native-draggable-flatlist/src/components/DraggableFlatList';
 import Draggable from '../components/Draggable';
-import {submitBallot} from '../apis/AppSync';
+import {submitBallot, updateRoomUserState} from '../apis/AppSync';
 import Background from '../components/Background';
 
 const Vote = ({navigation}) => {
@@ -17,6 +17,7 @@ const Vote = ({navigation}) => {
   });
 
   const [options, setOptions] = useState(listData);
+  const [userId] = useState(sessionStore.getState().user_id);
 
   return (
     <SafeAreaView style={[styles.background]}>
@@ -46,6 +47,7 @@ const Vote = ({navigation}) => {
             submitBallot(sessionStore.getState().room_id, ballot).then(r => {
               // TODO: Save ballot ID to prevent duplicate submission
               navigation.navigate('Waiting');
+              updateRoomUserState(userId, 'voted');
             });
           }}
         />

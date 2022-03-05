@@ -4,9 +4,17 @@ import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import {API, graphqlOperation} from 'aws-amplify';
-import {onCreateVote, onUpdateRoom} from '../graphql/subscriptions';
+import {
+  onCreateRoomUser,
+  onCreateVote,
+  onDeleteRoomUser,
+  onUpdateRoom,
+  onUpdateRoomUser,
+} from '../graphql/subscriptions';
 import {
   getAllBallots,
+  getAllUsersForRoom,
+  getAppSyncRoom,
   updateRoomState,
   updateRoomWinner,
 } from '../apis/AppSync';
@@ -15,75 +23,118 @@ import {setWinningVote} from '../redux/actions/setWinningVote';
 import Background from '../components/Background';
 
 const Waiting = ({navigation, route}) => {
-  // TODO: Hosts votes are only calculated once another vote comes into the DB
   const [votes, setVotes] = useState([]);
+  const [roomCode, setRoomCode] = useState(sessionStore.getState().room_id);
+  const [userId, setUserId] = useState(sessionStore.getState().user_id);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [votedUsers, setVotedUsers] = useState(0);
 
-  function onVoteCreate() {
-    getAllBallots(sessionStore.getState().room_id).then(voteData => {
-      console.log(voteData?.data?.getVotesForRoom?.items);
-      if (voteData?.data?.getVotesForRoom?.items) {
-        setVotes(voteData?.data?.getVotesForRoom?.items);
-      }
-    });
-  }
-
-  function onRoomUpdate(roomData) {
-    if (roomData?.value?.data?.onUpdateRoom?.state === 'result') {
-      sessionStore.dispatch(
-        setWinningVote(roomData?.value?.data?.onUpdateRoom?.winner),
-      );
-      navigation.navigate('Result');
-    }
-  }
-
-  function closeVoting() {
-    const result = calculateRanking(
-      sessionStore.getState().suggestions,
-      votes.map(v => v.ranking),
-    );
-    updateRoomWinner(sessionStore.getState().room_id, result[0]).then(() => {
-      updateRoomState(sessionStore.getState().room_id, 'result');
-    });
-    sessionStore.dispatch(setWinningVote(result[0]));
-  }
-
+  // ON LOAD (WILL ONLY RUN ONCE)
   useEffect(() => {
-    // Listen for new votes
-    const updateSub = API.graphql(
+    // Fetch potential existing votes
+    getAllBallots(sessionStore.getState().room_id).then(voteData => {
+      const items = voteData?.data?.getVotesForRoom?.items;
+      setVotes(items ?? []);
+    });
+  }, []);
+
+  // SETUP SUBSCRIPTIONS
+  useEffect(() => {
+    // Helper function for when users update their state
+    const updateUsers = () => {
+      getAllUsersForRoom(roomCode).then(r => {
+        const users = r ?? [];
+        setTotalUsers(users.length);
+        setVotedUsers(users.filter(a => a?.state === 'voted').length);
+        if (
+          sessionStore.getState().isHost &&
+          !users.some(a => a?.state !== 'voted')
+        ) {
+          // TODO: Calculate result
+          // All users are ready
+          updateRoomWinner(roomCode, 'Some winner');
+        }
+      });
+    };
+
+    const voteCreationSub = API.graphql(
       graphqlOperation(onCreateVote, {
         room_id: sessionStore.getState().room_id,
       }),
     ).subscribe({
-      next: onVoteCreate,
+      next: () => {
+        getAllBallots(sessionStore.getState().room_id).then(voteData => {
+          const items = voteData?.data?.getVotesForRoom?.items;
+          setVotes(items ?? []);
+        });
+      },
       error: error => console.warn(error),
     });
 
-    // Listen for host closing the voting period
-    const updateRoom = API.graphql(
-      graphqlOperation(onUpdateRoom, {
-        id: sessionStore.getState().room_id,
+    // On Room Updated
+    const updateRoomSub = API.graphql(
+      graphqlOperation(onUpdateRoom, {id: sessionStore.getState().room_id}),
+    ).subscribe({
+      next: data => {
+        console.log(data);
+        // If the state of the room changes to result, transition.
+        const roomState = data?.value?.data?.onUpdateRoom?.state;
+        const winner = data?.value?.data?.onUpdateRoom?.winner;
+        if (roomState === 'result') {
+          sessionStore.dispatch(setWinningVote(winner));
+          navigation.navigate('Result');
+        }
+      },
+      error: error => console.warn(error),
+    });
+
+    // On a new user joining the room
+    const newUserSub = API.graphql(
+      graphqlOperation(onCreateRoomUser, {
+        room_id: roomCode,
       }),
     ).subscribe({
-      next: onRoomUpdate,
+      next: updateUsers,
+      error: error => console.warn(error),
+    });
+
+    // On a user leaving the room
+    const deleteUserSub = API.graphql(
+      graphqlOperation(onDeleteRoomUser, {
+        room_id: roomCode,
+      }),
+    ).subscribe({
+      next: updateUsers,
+      error: error => console.warn(error),
+    });
+
+    // On a user updating their state
+    const updateUserSub = API.graphql(
+      graphqlOperation(onUpdateRoomUser, {
+        room_id: roomCode,
+      }),
+    ).subscribe({
+      next: updateUsers,
       error: error => console.warn(error),
     });
 
     return () => {
-      updateSub.unsubscribe();
-      updateRoom.unsubscribe();
+      updateRoomSub.unsubscribe();
+      newUserSub.unsubscribe();
+      deleteUserSub.unsubscribe();
+      updateUserSub.unsubscribe();
+      voteCreationSub.unsubscribe();
     };
-  });
+  }, [roomCode, navigation, userId]);
 
   return (
     <SafeAreaView style={[styles.background]}>
       <Background />
 
       <Text style={styles.title}>Waiting for votes to come in!</Text>
-      {sessionStore.getState().isHost && (
-        <View style={styles.buttonContainer}>
-          <TextButton text={'Close Voting'} onPress={() => closeVoting()} />
-        </View>
-      )}
+      <Text style={styles.title}>
+        {votedUsers} of {totalUsers} voted
+      </Text>
     </SafeAreaView>
   );
 };
