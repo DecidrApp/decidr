@@ -68,8 +68,8 @@ export const onDeleteVote = /* GraphQL */ `
   }
 `;
 export const onCreateRoomUser = /* GraphQL */ `
-  subscription OnCreateRoomUser($id: ID, $room_id: String, $state: String) {
-    onCreateRoomUser(id: $id, room_id: $room_id, state: $state) {
+  subscription OnCreateRoomUser($room_id: String) {
+    onCreateRoomUser(room_id: $room_id) {
       id
       room_id
       state
@@ -86,8 +86,8 @@ export const onUpdateRoomUser = /* GraphQL */ `
   }
 `;
 export const onDeleteRoomUser = /* GraphQL */ `
-  subscription OnDeleteRoomUser($id: ID, $room_id: String, $state: String) {
-    onDeleteRoomUser(id: $id, room_id: $room_id, state: $state) {
+  subscription OnDeleteRoomUser($room_id: String) {
+    onDeleteRoomUser(room_id: $room_id) {
       id
       room_id
       state

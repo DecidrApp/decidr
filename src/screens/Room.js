@@ -10,6 +10,7 @@ import {API, graphqlOperation} from 'aws-amplify';
 import {
   onCreateRoomUser,
   onDeleteRoom,
+  onDeleteRoomUser,
   onUpdateRoom,
 } from '../graphql/subscriptions';
 import {addSuggestions} from '../redux/actions/addSuggestions';
@@ -31,14 +32,10 @@ const Room = ({navigation}) => {
   const [userState, setUserState] = useState('suggesting');
   const [suggestions, setSuggestions] = useState([]);
   const [users, setUsers] = useState([]);
+  const [numParticipants, setNumParticipants] = useState(1);
   const isFocused = useIsFocused(); // Force re-render
 
-  // Calculate number of participants
-  function numParticipants() {
-    return users.length;
-  }
-
-  // ON LOAD
+  // ON LOAD (WILL ONLY RUN ONCE)
   useEffect(() => {
     // Save room code into local state
     if (sessionStore.getState().room_id) {
@@ -51,17 +48,18 @@ const Room = ({navigation}) => {
     }
 
     // Fetch existing suggestions and users
-    getAppSyncRoom(roomCode)
+    getAppSyncRoom(sessionStore.getState().room_id)
       .then(r => {
         const selected = r?.data?.getRoom?.selected;
         setSuggestions(selected ?? []);
         sessionStore.dispatch(addSuggestions(selected ?? []));
-        return getAllUsersForRoom(roomCode);
+        return getAllUsersForRoom(sessionStore.getState().room_id);
       })
       .then(r => {
         setUsers(r ?? []);
+        setNumParticipants((r ?? []).length);
       });
-  }, [roomCode]);
+  }, []);
 
   function closeLeaveRoom() {
     // If user is the host, close the room
@@ -76,7 +74,7 @@ const Room = ({navigation}) => {
     navigation.navigate('Home');
   }
 
-  // SETUP SUBSCRIPTIONS (WILL RUN ONCE)
+  // SETUP SUBSCRIPTIONS
   useEffect(() => {
     // On Room Updated
     const updateRoomSub = API.graphql(
@@ -102,12 +100,31 @@ const Room = ({navigation}) => {
     // On a new user joining the room
     const newUserSub = API.graphql(
       graphqlOperation(onCreateRoomUser, {
-        room_id: sessionStore.getState().room_id,
+        room_id: roomCode,
       }),
     ).subscribe({
       next: r => {
         console.log('new user joined');
-        console.log(r);
+        getAllUsersForRoom(roomCode).then(r => {
+          setUsers(r ?? []);
+          setNumParticipants((r ?? []).length);
+        });
+      },
+      error: error => console.warn(error),
+    });
+
+    // On a user leaving the room
+    const deleteUserSub = API.graphql(
+      graphqlOperation(onDeleteRoomUser, {
+        room_id: roomCode,
+      }),
+    ).subscribe({
+      next: () => {
+        console.log('user left');
+        getAllUsersForRoom(roomCode).then(r => {
+          setUsers(r ?? []);
+          setNumParticipants((r ?? []).length);
+        });
       },
       error: error => console.warn(error),
     });
@@ -128,6 +145,7 @@ const Room = ({navigation}) => {
     return () => {
       updateRoomSub.unsubscribe();
       newUserSub.unsubscribe();
+      deleteUserSub.unsubscribe();
       deleteSub.unsubscribe();
     };
   }, [roomCode, navigation, userId]);
@@ -141,7 +159,7 @@ const Room = ({navigation}) => {
         showsHorizontalScrollIndicator={false}>
         <Text style={[styles.roomCode]}>{'Room Code: ' + roomCode}</Text>
         <Text style={[styles.participants]}>
-          {String(numParticipants()) + ' participants'}
+          {String(numParticipants) + ' participants'}
         </Text>
 
         {suggestions.map(suggestion => (

@@ -31,13 +31,13 @@ function generateCode() {
 // ------------------------------------------------
 
 async function getAllUsersForRoom(code) {
-  await API.graphql(
+  return await API.graphql(
     graphqlOperation(queryRoomUsersByRoomIdIndex, {
       room_id: code,
     }),
   )
     .then(r => {
-      return r?.data?.queryRoomUsersByRoomIdIndex;
+      return r?.data?.queryRoomUsersByRoomIdIndex?.items;
     })
     .catch(r => {
       console.info(r);
