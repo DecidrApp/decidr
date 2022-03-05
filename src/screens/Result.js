@@ -9,14 +9,13 @@ import {onDeleteRoom, onUpdateRoom} from '../graphql/subscriptions';
 import {
   closeAppSyncRoom,
   deleteAllBallots,
-  getAppSyncRoom,
   removeRoomUser,
   updateRoomState,
   updateRoomUserState,
 } from '../apis/AppSync';
 import {resetRoom} from '../redux/actions/resetRoom';
 import Background from '../components/Background';
-import {setWinningVote} from '../redux/actions/setWinningVote';
+import {setRoomUserState} from '../redux/actions/setRoomUserState';
 
 const Result = ({navigation}) => {
   function closeLeaveRoom() {
@@ -53,8 +52,13 @@ const Result = ({navigation}) => {
     ).subscribe({
       next: roomData => {
         if (roomData?.value?.data?.onUpdateRoom?.state === 'open') {
-          updateRoomUserState(sessionStore.getState().user_id, 'suggesting');
-          navigation.navigate('Room');
+          updateRoomUserState(
+            sessionStore.getState().user_id,
+            'suggesting',
+          ).then(() => {
+            sessionStore.dispatch(setRoomUserState('suggesting'));
+            navigation.navigate('Room');
+          });
         }
       },
       error: error => console.warn(error),

@@ -1,8 +1,5 @@
 import React from 'react';
 import {
-  Dimensions,
-  Image,
-  ImageBackground,
   Keyboard,
   SafeAreaView,
   StyleSheet,
@@ -29,6 +26,7 @@ import missingRoomCodeAlert from '../alerts/missingRoomCodeAlert';
 import joinFailureAlert from '../alerts/joinFailureAlert';
 import Background from '../components/Background';
 import {setRoomUserId} from '../redux/actions/setRoomUserId';
+import {setRoomUserState} from '../redux/actions/setRoomUserState';
 
 const Home = ({navigation}) => {
   const [roomCode, setRoomCode] = React.useState('');
@@ -42,6 +40,7 @@ const Home = ({navigation}) => {
           sessionStore.dispatch(setRoomUserId(r2));
           sessionStore.dispatch(setRoomId(r.data.createRoom.id));
           sessionStore.dispatch(setIsHost(true));
+          sessionStore.dispatch(setRoomUserState('suggesting'));
           navigation.navigate('Room');
         });
       })
@@ -63,6 +62,7 @@ const Home = ({navigation}) => {
             sessionStore.dispatch(setRoomUserId(r2));
             sessionStore.dispatch(setRoomId(roomCode));
             sessionStore.dispatch(setIsHost(false));
+            sessionStore.dispatch(setRoomUserState('suggesting'));
             navigation.navigate('Room');
           });
         });

@@ -8,6 +8,7 @@ import {
   SET_WINNING_VOTE,
   RESET_ROOM,
   SET_ROOM_USER_ID,
+  SET_ROOM_USER_STATE,
 } from './types';
 
 const initialState = {
@@ -61,11 +62,17 @@ const reducer = (state = initialState, action) => {
         ...state,
         room_id: null,
         user_id: null,
+        user_state: null,
       };
     case SET_ROOM_USER_ID:
       return {
         ...state,
         user_id: action.payload.user_id,
+      };
+    case SET_ROOM_USER_STATE:
+      return {
+        ...state,
+        user_state: action.payload.user_state,
       };
     default:
       return state;

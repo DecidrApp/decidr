@@ -26,12 +26,12 @@ import {
   updateRoomUserState,
 } from '../apis/AppSync';
 import Background from '../components/Background';
+import {setRoomUserState} from '../redux/actions/setRoomUserState';
 
 const Room = ({navigation}) => {
   // Setup States
-  const [roomCode, setRoomCode] = useState(sessionStore.getState().room_id);
-  const [userId, setUserId] = useState(sessionStore.getState().user_id);
-  const [userState, setUserState] = useState('suggesting');
+  const [roomCode] = useState(sessionStore.getState().room_id);
+  const [userId] = useState(sessionStore.getState().user_id);
   const [suggestions, setSuggestions] = useState([]);
   const [users, setUsers] = useState([]);
   const [numParticipants, setNumParticipants] = useState(1);
@@ -188,15 +188,19 @@ const Room = ({navigation}) => {
           />
 
           <TextButton
-            text={userState === 'suggesting' ? 'Ready' : 'Unready'}
+            text={
+              sessionStore.getState().user_state === 'suggesting'
+                ? 'Ready'
+                : 'Unready'
+            }
             styleOverride={{flex: 1, marginLeft: 5}}
             onPress={() => {
-              if (userState === 'suggesting') {
+              if (sessionStore.getState().user_state === 'suggesting') {
                 updateRoomUserState(userId, 'ready');
-                setUserState('ready');
+                sessionStore.dispatch(setRoomUserState('ready'));
               } else {
                 updateRoomUserState(userId, 'suggesting');
-                setUserState('suggesting');
+                sessionStore.dispatch(setRoomUserState('suggesting'));
               }
             }}
           />

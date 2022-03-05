@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import TextButton from '../components/TextButton';
+import {SafeAreaView, StyleSheet, Text} from 'react-native';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import {API, graphqlOperation} from 'aws-amplify';
@@ -14,18 +13,15 @@ import {
 import {
   getAllBallots,
   getAllUsersForRoom,
-  getAppSyncRoom,
-  updateRoomState,
   updateRoomWinner,
 } from '../apis/AppSync';
-import {calculateRanking} from '../apis/Voting';
 import {setWinningVote} from '../redux/actions/setWinningVote';
 import Background from '../components/Background';
 
 const Waiting = ({navigation, route}) => {
   const [votes, setVotes] = useState([]);
-  const [roomCode, setRoomCode] = useState(sessionStore.getState().room_id);
-  const [userId, setUserId] = useState(sessionStore.getState().user_id);
+  const [roomCode] = useState(sessionStore.getState().room_id);
+  const [userId] = useState(sessionStore.getState().user_id);
   const [totalUsers, setTotalUsers] = useState(0);
   const [votedUsers, setVotedUsers] = useState(0);
 
@@ -76,7 +72,6 @@ const Waiting = ({navigation, route}) => {
       graphqlOperation(onUpdateRoom, {id: sessionStore.getState().room_id}),
     ).subscribe({
       next: data => {
-        console.log(data);
         // If the state of the room changes to result, transition.
         const roomState = data?.value?.data?.onUpdateRoom?.state;
         const winner = data?.value?.data?.onUpdateRoom?.winner;
