@@ -6,7 +6,9 @@ A mobile application to help users make a group decision on what food to order f
 [Installation](https://github.com/DecidrApp/decidr/wiki/Installation)  
 [Building the app](https://github.com/DecidrApp/decidr/wiki/Building)  
 [Architecture](https://github.com/DecidrApp/decidr/wiki/Architecture)  
-[Screenshots](https://github.com/DecidrApp/decidr/wiki/Screenshots)
+[Screenshots](https://github.com/DecidrApp/decidr/wiki/Screenshots)  
 
-## License
 This project is licensed under [Apache V2](https://github.com/DecidrApp/decidr/blob/master/LICENSE.txt)
+
+## Usage
+**Screenshots**
