@@ -15,6 +15,7 @@
 		9505499DF73C05ECCB2CA1A9 /* libPods-decidr-decidrTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F26B0D0CD612D8BB4DA2A128 /* libPods-decidr-decidrTests.a */; };
 		A28BF4277270444B96D8925F /* LeagueGothic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0DE06843DD494DFD9DB57023 /* LeagueGothic.ttf */; };
 		D56C16EBE686B0B526E52397 /* libPods-decidr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B92BC0239706409F7B036DA3 /* libPods-decidr.a */; };
+		2A999C8B0E2E4586BCEAD1B1 /* LeagueGothic-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2ADBD28EC0EE4139AB475E93 /* LeagueGothic-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,7 @@
 		B92BC0239706409F7B036DA3 /* libPods-decidr.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-decidr.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F26B0D0CD612D8BB4DA2A128 /* libPods-decidr-decidrTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-decidr-decidrTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2ADBD28EC0EE4139AB475E93 /* LeagueGothic-Regular.ttf */ = {isa = PBXFileReference; name = "LeagueGothic-Regular.ttf"; path = "../src/assets/fonts/LeagueGothic-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				0DE06843DD494DFD9DB57023 /* LeagueGothic.ttf */,
+				2ADBD28EC0EE4139AB475E93 /* LeagueGothic-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -256,6 +259,7 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				A28BF4277270444B96D8925F /* LeagueGothic.ttf in Resources */,
+				2A999C8B0E2E4586BCEAD1B1 /* LeagueGothic-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
