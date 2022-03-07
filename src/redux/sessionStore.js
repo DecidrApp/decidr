@@ -15,6 +15,12 @@ const initialState = {
   isHost: false,
   winningVote: '',
   suggestions: [],
+  location_granted: false,
+  longitude: 0.0,
+  latitude: 0.0,
+  room_id: null,
+  user_id: null,
+  user_state: null,
 };
 
 const reducer = (state = initialState, action) => {
@@ -27,7 +33,7 @@ const reducer = (state = initialState, action) => {
     case SET_LOCATION:
       return {
         ...state,
-        granted: action.payload.granted,
+        location_granted: action.payload.location_granted,
         longitude: action.payload.longitude,
         latitude: action.payload.latitude,
       };

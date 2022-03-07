@@ -27,7 +27,7 @@ const Suggest = ({navigation, route}) => {
     const long = sessionStore.getState().longitude;
     const lat = sessionStore.getState().latitude;
     console.log(long, lat);
-    if (sessionStore.getState().granted) {
+    if (sessionStore.getState().location_granted) {
       fetchData(lat, long).then(x => {
         // TODO: How many to render? Load on scroll?
         // TODO: I think this might be causing a memory leak
