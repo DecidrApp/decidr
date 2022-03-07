@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import TextButton from '../components/TextButton';
@@ -19,9 +20,11 @@ import Background from '../components/Background';
 
 const Suggest = ({navigation, route}) => {
   const [restaurants, setRestaurants] = useState([]);
+  const [customOptions, setCustomOptions] = useState([]);
   const [selected, setSelected] = useState([]);
   const [numSelected, setNumSelected] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchRestaurants = () => {
     const long = sessionStore.getState().longitude;
@@ -30,13 +33,15 @@ const Suggest = ({navigation, route}) => {
     if (sessionStore.getState().location_granted) {
       fetchData(lat, long).then(x => {
         // TODO: How many to render? Load on scroll?
-        // TODO: I think this might be causing a memory leak
         setRestaurants(x.slice(0, 10));
         setLoading(false);
       });
     }
   };
-  fetchRestaurants();
+
+  useEffect(() => {
+    fetchRestaurants();
+  }, []);
 
   //TODO: I'm noticing some lag when selecting, seems to increase with # selected
   const suggestionSelected = name => {
@@ -49,6 +54,15 @@ const Suggest = ({navigation, route}) => {
     setSelected(selected.filter(item => item !== name));
   };
 
+  const restaurantNameExists = name => {
+    for (const restaurant of restaurants) {
+      if (restaurant.name.toLowerCase() === name.toLowerCase()) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   return (
     <SafeAreaView style={[styles.background]}>
       <Background />
@@ -58,26 +72,78 @@ const Suggest = ({navigation, route}) => {
         showsHorizontalScrollIndicator={false}>
         <Text style={[styles.title]}>{'Suggest'}</Text>
 
+        <TextInput
+          style={styles.input}
+          onChangeText={setSearchTerm}
+          value={searchTerm}
+          textAlign={'left'}
+          placeholder={'Search / Add Custom'}
+          placeholderTextColor={COLORS.SECONDARY_LIGHT}
+          autoCorrect={false}
+        />
+
         {loading && <ActivityIndicator size={'large'} color={COLORS.WHITE} />}
-        {restaurants.map(restaurant => (
-          <ToggleButton
-            text={restaurant.name}
-            key={restaurant.id}
-            onSelect={() => {
-              suggestionSelected(restaurant.name);
-            }}
-            onDeselect={() => {
-              suggestionDeselected(restaurant.name);
-            }}
-          />
-        ))}
+
+        {searchTerm !== '' &&
+          !customOptions.includes(searchTerm) &&
+          !restaurantNameExists(searchTerm) && (
+            <ToggleButton
+              text={searchTerm}
+              key={searchTerm}
+              styleOverride={{marginBottom: 20}}
+              onSelect={() => {
+                setCustomOptions([...customOptions, searchTerm]);
+                suggestionSelected(searchTerm);
+              }}
+              onDeselect={() => {
+                suggestionDeselected(searchTerm);
+              }}
+            />
+          )}
+
+        {customOptions.map(option => {
+          if (!option.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return null;
+          }
+          return (
+            <ToggleButton
+              text={option}
+              key={option}
+              onSelect={() => {
+                suggestionSelected(option);
+              }}
+              onDeselect={() => {
+                suggestionDeselected(option);
+              }}
+              alreadySelected={true}
+            />
+          );
+        })}
+
+        {restaurants.map(restaurant => {
+          if (
+            !restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
+          ) {
+            return null;
+          }
+          return (
+            <ToggleButton
+              text={restaurant.name}
+              key={restaurant.id}
+              onSelect={() => {
+                suggestionSelected(restaurant.name);
+              }}
+              onDeselect={() => {
+                suggestionDeselected(restaurant.name);
+              }}
+            />
+          );
+        })}
 
         <View
-          style={[
-            {
-              paddingTop: '55%',
-            },
-          ]}
+          style={{
+            paddingTop: '55%',
+          }}
         />
       </ScrollView>
       <View style={[styles.addContainer]}>
@@ -120,6 +186,17 @@ const styles = StyleSheet.create({
     paddingTop: '10%',
     marginBottom: 20,
     color: COLORS.WHITE,
+  },
+  input: {
+    flex: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    marginBottom: 20,
+    fontFamily: 'LeagueGothic',
+    fontSize: 25,
+    color: COLORS.BLACK,
+    borderRadius: 10,
+    backgroundColor: COLORS.WHITE,
   },
   addContainer: {
     position: 'absolute',
