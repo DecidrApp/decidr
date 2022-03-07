@@ -54,6 +54,15 @@ const Suggest = ({navigation, route}) => {
     setSelected(selected.filter(item => item !== name));
   };
 
+  const restaurantNameExists = name => {
+    for (const restaurant of restaurants) {
+      if (restaurant.name.toLowerCase() === name.toLowerCase()) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   return (
     <SafeAreaView style={[styles.background]}>
       <Background />
@@ -75,19 +84,22 @@ const Suggest = ({navigation, route}) => {
 
         {loading && <ActivityIndicator size={'large'} color={COLORS.WHITE} />}
 
-        {searchTerm !== '' && !customOptions.includes(searchTerm) && (
-          <ToggleButton
-            text={searchTerm}
-            key={searchTerm}
-            onSelect={() => {
-              setCustomOptions([...customOptions, searchTerm]);
-              suggestionSelected(searchTerm);
-            }}
-            onDeselect={() => {
-              suggestionDeselected(searchTerm);
-            }}
-          />
-        )}
+        {searchTerm !== '' &&
+          !customOptions.includes(searchTerm) &&
+          !restaurantNameExists(searchTerm) && (
+            <ToggleButton
+              text={searchTerm}
+              key={searchTerm}
+              styleOverride={{marginBottom: 20}}
+              onSelect={() => {
+                setCustomOptions([...customOptions, searchTerm]);
+                suggestionSelected(searchTerm);
+              }}
+              onDeselect={() => {
+                suggestionDeselected(searchTerm);
+              }}
+            />
+          )}
 
         {customOptions.map(option => {
           if (!option.toLowerCase().includes(searchTerm.toLowerCase())) {

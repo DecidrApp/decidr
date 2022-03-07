@@ -7,6 +7,7 @@ const ToggleButton = ({
   onSelect,
   onDeselect,
   alreadySelected = false,
+  styleOverride = {},
 }) => {
   const [isSelected, setIsSelected] = useState(alreadySelected);
 
@@ -21,7 +22,7 @@ const ToggleButton = ({
           onSelect();
         }
       }}
-      style={styles.button}
+      style={[styles.button, styleOverride]}
       activeOpacity={0.95}
       underlayColor={COLORS.SECONDARY_LIGHT}>
       <View style={styles.container}>
