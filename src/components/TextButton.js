@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 40,
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     color: COLORS.WHITE,
   },
 });

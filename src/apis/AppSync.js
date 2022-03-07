@@ -1,5 +1,9 @@
 import {API, graphqlOperation} from 'aws-amplify';
-import {getRoom, getVotesForRoom} from '../graphql/queries';
+import {
+  getRoom,
+  getVotesForRoom,
+  queryRoomUsersByRoomIdIndex,
+} from '../graphql/queries';
 import {
   createRoom,
   createVote,
@@ -19,12 +23,28 @@ function generateCode() {
   return Math.random()
     .toString(36)
     .replace(/[^a-np-z1-9]+/, '')
-    .slice(0, 5);
+    .slice(0, 3);
 }
 
 // ------------------------------------------------
 // ---------------- USER OPERATIONS ---------------
 // ------------------------------------------------
+
+async function getAllUsersForRoom(code) {
+  return await API.graphql(
+    graphqlOperation(queryRoomUsersByRoomIdIndex, {
+      room_id: code,
+    }),
+  )
+    .then(r => {
+      return r?.data?.queryRoomUsersByRoomIdIndex?.items;
+    })
+    .catch(r => {
+      console.info(r);
+      console.warn('Unable to fetch all room users in room ' + code);
+      return [];
+    });
+}
 
 async function addRoomUser(code) {
   return API.graphql(
@@ -36,7 +56,7 @@ async function addRoomUser(code) {
     }),
   )
     .then(r => {
-      return r?.data?.createRoomUser.id;
+      return r?.data?.createRoomUser?.id;
     })
     .catch(r => {
       console.info(r);
@@ -45,22 +65,18 @@ async function addRoomUser(code) {
     });
 }
 
-async function removeRoomUser(user_id) {
+function removeRoomUser(user_id) {
   return API.graphql(
     graphqlOperation(deleteRoomUser, {
       input: {
         id: user_id,
       },
     }),
-  )
-    .then(r => {
-      return !!r?.data?.deleteRoomUser;
-    })
-    .catch(r => {
-      console.info(r);
-      console.warn('Unable to remove room user ' + user_id);
-      return false;
-    });
+  ).catch(r => {
+    console.info(r);
+    console.warn('Unable to remove room user ' + user_id);
+    return false;
+  });
 }
 
 function updateRoomUserState(user_id, state) {
@@ -139,7 +155,7 @@ function updateRoomState(code, state) {
 function updateRoomWinner(code, winner) {
   return API.graphql(
     graphqlOperation(updateRoom, {
-      input: {id: code, winner: winner},
+      input: {id: code, winner: winner, state: 'result'},
     }),
   ).catch(r => {
     console.info(r);
@@ -206,4 +222,5 @@ export {
   addRoomUser,
   removeRoomUser,
   updateRoomUserState,
+  getAllUsersForRoom,
 };

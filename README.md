@@ -23,4 +23,6 @@ Ensure you have:
 * Android SDK for Android or XCode for iOS
 * AWS API Key (is not commited to repo)
 
+If you get an error about missing fonts, run ```react-native link``` in the root directory.
+
 See https://reactnative.dev/docs/environment-setup for more information

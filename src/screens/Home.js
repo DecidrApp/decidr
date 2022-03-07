@@ -1,8 +1,5 @@
 import React from 'react';
 import {
-  Dimensions,
-  Image,
-  ImageBackground,
   Keyboard,
   SafeAreaView,
   StyleSheet,
@@ -20,6 +17,7 @@ import {
   createAppSyncRoom,
   appSyncRoomExists,
   getAppSyncRoom,
+  addRoomUser,
 } from '../apis/AppSync';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import requestLocation from '../apis/requestLocation';
@@ -27,11 +25,52 @@ import roomCreationFailureAlert from '../alerts/roomCreationFailureAlert';
 import missingRoomCodeAlert from '../alerts/missingRoomCodeAlert';
 import joinFailureAlert from '../alerts/joinFailureAlert';
 import Background from '../components/Background';
+import {setRoomUserId} from '../redux/actions/setRoomUserId';
+import {setRoomUserState} from '../redux/actions/setRoomUserState';
 
 const Home = ({navigation}) => {
   const [roomCode, setRoomCode] = React.useState('');
 
   requestLocation();
+
+  function hostRoom() {
+    createAppSyncRoom()
+      .then(r => {
+        addRoomUser(r.data.createRoom.id).then(r2 => {
+          sessionStore.dispatch(setRoomUserId(r2));
+          sessionStore.dispatch(setRoomId(r.data.createRoom.id));
+          sessionStore.dispatch(setIsHost(true));
+          sessionStore.dispatch(setRoomUserState('suggesting'));
+          navigation.navigate('Room');
+        });
+      })
+      .catch(() => {
+        roomCreationFailureAlert();
+      });
+  }
+
+  function joinRoom() {
+    if (roomCode === '') {
+      missingRoomCodeAlert();
+      return;
+    }
+    appSyncRoomExists(roomCode).then(r => {
+      if (r) {
+        getAppSyncRoom(roomCode).then(r => {
+          addRoomUser(roomCode).then(r2 => {
+            sessionStore.dispatch(addSuggestions(r?.data?.getRoom?.selected));
+            sessionStore.dispatch(setRoomUserId(r2));
+            sessionStore.dispatch(setRoomId(roomCode));
+            sessionStore.dispatch(setIsHost(false));
+            sessionStore.dispatch(setRoomUserState('suggesting'));
+            navigation.navigate('Room');
+          });
+        });
+      } else {
+        joinFailureAlert();
+      }
+    });
+  }
 
   return (
     <TouchableWithoutFeedback
@@ -43,20 +82,7 @@ const Home = ({navigation}) => {
         <Background />
         <Text style={[styles.title]}>{'Decidr'}</Text>
 
-        <TextButton
-          text={'Host Room'}
-          onPress={() => {
-            createAppSyncRoom()
-              .then(r => {
-                sessionStore.dispatch(setRoomId(r.data.createRoom.id));
-                sessionStore.dispatch(setIsHost(true));
-                navigation.navigate('Room');
-              })
-              .catch(() => {
-                roomCreationFailureAlert();
-              });
-          }}
-        />
+        <TextButton text={'Host Room'} onPress={hostRoom} />
         <View style={styles.rowContainer}>
           <TextInput
             style={styles.input}
@@ -71,26 +97,7 @@ const Home = ({navigation}) => {
           <TextButton
             text={'Join Room'}
             styleOverride={{flex: 2}}
-            onPress={() => {
-              if (roomCode === '') {
-                missingRoomCodeAlert();
-                return;
-              }
-              appSyncRoomExists(roomCode).then(r => {
-                if (r) {
-                  getAppSyncRoom(roomCode).then(r => {
-                    sessionStore.dispatch(
-                      addSuggestions(r?.data?.getRoom?.selected),
-                    );
-                    sessionStore.dispatch(setRoomId(roomCode));
-                    sessionStore.dispatch(setIsHost(false));
-                    navigation.navigate('Room');
-                  });
-                } else {
-                  joinFailureAlert();
-                }
-              });
-            }}
+            onPress={joinRoom}
           />
         </View>
       </SafeAreaView>
@@ -112,7 +119,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 64,
     fontWeight: '600',
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     textAlign: 'center',
     marginBottom: 30,
     color: COLORS.WHITE,
@@ -122,7 +129,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     textTransform: 'lowercase',
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 25,
     color: COLORS.BLACK,
     borderRadius: 10,

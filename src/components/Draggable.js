@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   indexText: {
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 32,
     marginTop: -17,
     marginRight: 10,
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   text: {
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 32,
     color: COLORS.WHITE,
     flex: 1,

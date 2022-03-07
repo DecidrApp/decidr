@@ -30,7 +30,7 @@ const Suggest = ({navigation, route}) => {
     const long = sessionStore.getState().longitude;
     const lat = sessionStore.getState().latitude;
     console.log(long, lat);
-    if (sessionStore.getState().granted) {
+    if (sessionStore.getState().location_granted) {
       fetchData(lat, long).then(x => {
         // TODO: How many to render? Load on scroll?
         setRestaurants(x.slice(0, 10));
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   title: {
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 48,
     fontWeight: '600',
     textAlign: 'center',

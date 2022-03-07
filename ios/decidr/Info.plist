@@ -54,6 +54,7 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>LeagueGothic.ttf</string>
+		<string>LeagueGothic-Regular.ttf</string>
 	</array>
 </dict>
 </plist>
