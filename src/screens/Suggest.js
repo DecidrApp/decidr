@@ -18,7 +18,7 @@ import {API, graphqlOperation} from 'aws-amplify';
 import {updateRoom} from '../graphql/mutations';
 import Background from '../components/Background';
 
-const Suggest = ({navigation, route}) => {
+const Suggest = ({navigation}) => {
   const [restaurants, setRestaurants] = useState([]);
   const [customOptions, setCustomOptions] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     marginBottom: 20,
-    fontFamily: 'LeagueGothic',
+    fontFamily: 'LeagueGothic-Regular',
     fontSize: 25,
     color: COLORS.BLACK,
     borderRadius: 10,
