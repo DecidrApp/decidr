@@ -18,6 +18,7 @@ import {
   appSyncRoomExists,
   getAppSyncRoom,
   addRoomUser,
+  getAllUsersForRoom,
 } from '../apis/AppSync';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import requestLocation from '../apis/requestLocation';
@@ -26,7 +27,6 @@ import missingRoomCodeAlert from '../alerts/missingRoomCodeAlert';
 import joinFailureAlert from '../alerts/joinFailureAlert';
 import Background from '../components/Background';
 import {setRoomUserId} from '../redux/actions/setRoomUserId';
-import {setRoomUserState} from '../redux/actions/setRoomUserState';
 
 const Home = ({navigation}) => {
   const [roomCode, setRoomCode] = React.useState('');
@@ -40,8 +40,9 @@ const Home = ({navigation}) => {
           sessionStore.dispatch(setRoomUserId(r2));
           sessionStore.dispatch(setRoomId(r.data.createRoom.id));
           sessionStore.dispatch(setIsHost(true));
-          sessionStore.dispatch(setRoomUserState('suggesting'));
-          navigation.navigate('Room');
+          navigation.navigate('Room', {
+            initialParticipants: 1,
+          });
         });
       })
       .catch(() => {
@@ -56,14 +57,19 @@ const Home = ({navigation}) => {
     }
     appSyncRoomExists(roomCode).then(r => {
       if (r) {
-        getAppSyncRoom(roomCode).then(r => {
-          addRoomUser(roomCode).then(r2 => {
-            sessionStore.dispatch(addSuggestions(r?.data?.getRoom?.selected));
-            sessionStore.dispatch(setRoomUserId(r2));
-            sessionStore.dispatch(setRoomId(roomCode));
-            sessionStore.dispatch(setIsHost(false));
-            sessionStore.dispatch(setRoomUserState('suggesting'));
-            navigation.navigate('Room');
+        getAppSyncRoom(roomCode).then(r2 => {
+          addRoomUser(roomCode).then(r3 => {
+            getAllUsersForRoom(roomCode).then(r4 => {
+              sessionStore.dispatch(
+                addSuggestions(r2?.data?.getRoom?.selected),
+              );
+              sessionStore.dispatch(setRoomUserId(r3));
+              sessionStore.dispatch(setRoomId(roomCode));
+              sessionStore.dispatch(setIsHost(false));
+              navigation.navigate('Room', {
+                initialParticipants: (r4 ?? []).length,
+              });
+            });
           });
         });
       } else {

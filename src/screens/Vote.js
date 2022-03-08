@@ -5,7 +5,12 @@ import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import DraggableFlatList from 'react-native-draggable-flatlist/src/components/DraggableFlatList';
 import Draggable from '../components/Draggable';
-import {submitBallot, updateRoomUserState} from '../apis/AppSync';
+import {
+  getAllBallots,
+  getAllUsersForRoom,
+  submitBallot,
+  updateRoomUserState,
+} from '../apis/AppSync';
 import Background from '../components/Background';
 
 const Vote = ({navigation}) => {
@@ -44,10 +49,21 @@ const Vote = ({navigation}) => {
               ballot.push({name: options[i].key, rank: i + 1});
             }
 
-            submitBallot(sessionStore.getState().room_id, ballot).then(r => {
-              // TODO: Save ballot ID to prevent duplicate submission
-              navigation.navigate('Waiting');
-              updateRoomUserState(userId, 'voted');
+            submitBallot(sessionStore.getState().room_id, ballot).then(() => {
+              updateRoomUserState(userId, 'voted').then(() => {
+                getAllBallots(sessionStore.getState().room_id).then(r3 => {
+                  getAllUsersForRoom(sessionStore.getState().room_id).then(
+                    r4 => {
+                      const items = r3?.data?.getVotesForRoom?.items;
+                      // TODO: Save ballot ID to prevent duplicate submission
+                      navigation.navigate('Waiting', {
+                        initialVotes: items ?? [],
+                        initialUsers: r4 ?? [],
+                      });
+                    },
+                  );
+                });
+              });
             });
           }}
         />

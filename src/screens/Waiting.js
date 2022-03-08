@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import TextButton from '../components/TextButton';
+import {SafeAreaView, StyleSheet, Text} from 'react-native';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import {API, graphqlOperation} from 'aws-amplify';
@@ -14,57 +13,61 @@ import {
 import {
   getAllBallots,
   getAllUsersForRoom,
+  updateRoomState,
   updateRoomWinner,
 } from '../apis/AppSync';
 import {setWinningVote} from '../redux/actions/setWinningVote';
 import Background from '../components/Background';
+import {calculateRanking} from '../apis/Voting';
 
 const Waiting = ({navigation, route}) => {
-  const [votes, setVotes] = useState([]);
   const [roomCode] = useState(sessionStore.getState().room_id);
   const [userId] = useState(sessionStore.getState().user_id);
-  const [totalUsers, setTotalUsers] = useState(0);
-  const [votedUsers, setVotedUsers] = useState(0);
-
-  // ON LOAD (WILL ONLY RUN ONCE)
-  useEffect(() => {
-    // Fetch potential existing votes
-    getAllBallots(sessionStore.getState().room_id).then(voteData => {
-      const items = voteData?.data?.getVotesForRoom?.items;
-      setVotes(items ?? []);
-    });
-  }, []);
+  const [totalUsers, setTotalUsers] = useState(
+    (route.params?.initialUsers ?? []).length,
+  );
+  const [votedUsers, setVotedUsers] = useState(
+    (route.params?.initialVotes ?? []).length,
+  );
 
   // SETUP SUBSCRIPTIONS
   useEffect(() => {
     // Helper function for when users update their state
     const updateUsers = () => {
       getAllUsersForRoom(roomCode).then(r => {
-        const users = r ?? [];
-        setTotalUsers(users.length);
-        setVotedUsers(users.filter(a => a?.state === 'voted').length);
-        if (
-          sessionStore.getState().isHost &&
-          !users.some(a => a?.state !== 'voted')
-        ) {
-          // TODO: Calculate result
-          // All users are ready
-          updateRoomWinner(roomCode, 'Some winner');
-        }
+        getAllBallots(roomCode).then(r2 => {
+          const ballots = r2.data.getVotesForRoom.items.map(a => a.ranking);
+          const users = r ?? [];
+          setTotalUsers(users.length);
+          setVotedUsers(users.filter(a => a?.state === 'voted').length);
+          if (
+            sessionStore.getState().isHost &&
+            !users.some(a => a?.state !== 'voted')
+          ) {
+            const winner = calculateRanking(
+              sessionStore.getState().suggestions,
+              ballots,
+            )[0];
+            // All users are ready
+            updateRoomWinner(roomCode, winner).then(() => {
+              updateRoomState(roomCode, 'result');
+            });
+          }
+        });
       });
     };
+
+    // Call it once to if the host is the last vote
+    if (sessionStore.getState().isHost) {
+      updateUsers();
+    }
 
     const voteCreationSub = API.graphql(
       graphqlOperation(onCreateVote, {
         room_id: sessionStore.getState().room_id,
       }),
     ).subscribe({
-      next: () => {
-        getAllBallots(sessionStore.getState().room_id).then(voteData => {
-          const items = voteData?.data?.getVotesForRoom?.items;
-          setVotes(items ?? []);
-        });
-      },
+      next: updateUsers,
       error: error => console.warn(error),
     });
 

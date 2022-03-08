@@ -15,7 +15,6 @@ import {
 } from '../apis/AppSync';
 import {resetRoom} from '../redux/actions/resetRoom';
 import Background from '../components/Background';
-import {setRoomUserState} from '../redux/actions/setRoomUserState';
 
 const Result = ({navigation}) => {
   function closeLeaveRoom() {
@@ -56,8 +55,7 @@ const Result = ({navigation}) => {
             sessionStore.getState().user_id,
             'suggesting',
           ).then(() => {
-            sessionStore.dispatch(setRoomUserState('suggesting'));
-            navigation.navigate('Room');
+            navigation.navigate('Room', {userState: 'suggesting'});
           });
         }
       },

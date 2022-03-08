@@ -20,51 +20,45 @@ import {
   closeAppSyncRoom,
   deleteAllBallots,
   getAllUsersForRoom,
-  getAppSyncRoom,
   removeRoomUser,
   updateRoomState,
   updateRoomUserState,
 } from '../apis/AppSync';
 import Background from '../components/Background';
-import {setRoomUserState} from '../redux/actions/setRoomUserState';
 
-const Room = ({navigation}) => {
+const Room = ({route, navigation}) => {
   // Setup States
   const [roomCode] = useState(sessionStore.getState().room_id);
+  const [userState, setUserState] = useState(
+    route.params?.userState ?? 'suggesting',
+  );
   const [userId] = useState(sessionStore.getState().user_id);
-  const [suggestions, setSuggestions] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [numParticipants, setNumParticipants] = useState(1);
+  const [suggestions, setSuggestions] = useState(
+    sessionStore.getState().suggestions ?? [],
+  );
+  const [numParticipants, setNumParticipants] = useState(
+    route.params?.initialParticipants ?? 1,
+  );
   const isFocused = useIsFocused(); // Force re-render
-
-  // ON LOAD (WILL ONLY RUN ONCE)
-  useEffect(() => {
-    // Fetch existing suggestions and users
-    getAppSyncRoom(sessionStore.getState().room_id)
-      .then(r => {
-        const selected = r?.data?.getRoom?.selected;
-        setSuggestions(selected ?? []);
-        sessionStore.dispatch(addSuggestions(selected ?? []));
-        return getAllUsersForRoom(sessionStore.getState().room_id);
-      })
-      .then(r => {
-        setUsers(r ?? []);
-        setNumParticipants((r ?? []).length);
-      });
-  }, []);
 
   function closeLeaveRoom() {
     // If user is the host, close the room
-    removeRoomUser(sessionStore.getState().user_id);
-    if (sessionStore.getState().isHost) {
-      deleteAllBallots(roomCode);
-      closeAppSyncRoom(roomCode);
-    }
-
-    sessionStore.dispatch(resetSuggestions());
-    sessionStore.dispatch(resetRoom());
-    navigation.navigate('Home');
+    removeRoomUser(sessionStore.getState().user_id).then(() => {
+      if (sessionStore.getState().isHost) {
+        deleteAllBallots(roomCode);
+        closeAppSyncRoom(roomCode);
+      }
+      sessionStore.dispatch(resetSuggestions());
+      sessionStore.dispatch(resetRoom());
+      navigation.navigate('Home');
+    });
   }
+
+  useEffect(() => {
+    if (isFocused) {
+      setUserState(route.params?.userState ?? 'suggesting');
+    }
+  }, [isFocused, route.params?.userState]);
 
   // SETUP SUBSCRIPTIONS
   useEffect(() => {
@@ -72,9 +66,7 @@ const Room = ({navigation}) => {
     const updateUsers = () => {
       getAllUsersForRoom(roomCode).then(r => {
         const users = r ?? [];
-        setUsers(users);
         setNumParticipants(users.length);
-
         if (
           sessionStore.getState().isHost &&
           !users.some(a => a?.state !== 'ready')
@@ -188,19 +180,15 @@ const Room = ({navigation}) => {
           />
 
           <TextButton
-            text={
-              sessionStore.getState().user_state === 'suggesting'
-                ? 'Ready'
-                : 'Unready'
-            }
+            text={userState === 'suggesting' ? 'Ready' : 'Unready'}
             styleOverride={{flex: 1, marginLeft: 5}}
             onPress={() => {
-              if (sessionStore.getState().user_state === 'suggesting') {
+              if (userState === 'suggesting') {
                 updateRoomUserState(userId, 'ready');
-                sessionStore.dispatch(setRoomUserState('ready'));
+                setUserState('ready');
               } else {
                 updateRoomUserState(userId, 'suggesting');
-                sessionStore.dispatch(setRoomUserState('suggesting'));
+                setUserState('suggesting');
               }
             }}
           />
