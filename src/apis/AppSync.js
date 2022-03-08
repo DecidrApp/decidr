@@ -101,13 +101,13 @@ async function appSyncRoomExists(code) {
     .then(r => {
       return !!r?.data?.getRoom;
     })
-    .catch(r => {
+    .catch(() => {
       return false;
     });
 }
 
 async function getAppSyncRoom(code) {
-  return API.graphql(graphqlOperation(getRoom, {id: code})).catch(r => {
+  return API.graphql(graphqlOperation(getRoom, {id: code})).catch(() => {
     return null;
   });
 }
@@ -197,11 +197,14 @@ function getAllBallots(room_id) {
 function deleteAllBallots(room_id) {
   getAllBallots(room_id)
     .then(r => {
-      return API.graphql(
-        graphqlOperation(deleteVotes, {
-          input: {ids: r.data.getVotesForRoom.items.map(a => a.id)},
-        }),
-      );
+      const voteIds = r.data.getVotesForRoom.items ?? [];
+      if (voteIds.length > 0) {
+        return API.graphql(
+          graphqlOperation(deleteVotes, {
+            input: {ids: voteIds.map(a => a.id)},
+          }),
+        );
+      }
     })
     .catch(r => {
       console.info(r);
