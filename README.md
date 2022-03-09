@@ -10,4 +10,7 @@ This is a project for SENG 485A by Joe Zlonicky and Davis Carlson.
 [Building the app](https://github.com/DecidrApp/decidr/wiki/Building)  
 [Architecture](https://github.com/DecidrApp/decidr/wiki/Architecture)  
 
+More can be found in [the wiki](https://github.com/DecidrApp/decidr/wiki)!
+
+## License
 This project is licensed under [Apache V2](https://github.com/DecidrApp/decidr/blob/master/LICENSE.txt)
