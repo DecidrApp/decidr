@@ -1,6 +1,8 @@
 # Decidr
 A mobile application to help users make a group decision on what food to order from your local food delivery app.
 
+This is a project for SENG 485A by Joe Zlonicky and Davis Carlson.
+
 ## Resources
 [Milestone slides](https://github.com/DecidrApp/decidr/wiki)  
 [Installation](https://github.com/DecidrApp/decidr/wiki/Installation)  
@@ -9,8 +11,7 @@ A mobile application to help users make a group decision on what food to order f
 
 This project is licensed under [Apache V2](https://github.com/DecidrApp/decidr/blob/master/LICENSE.txt)
 
-## Usage
-**Experience democracy like never before**
+# Usage
 
 ## Easily Host or Join a Room
 <img src="https://user-images.githubusercontent.com/26125698/156955437-5c3ffb24-ff26-45c1-9c01-503dd66ff0cc.png" width="200"> <img src="https://user-images.githubusercontent.com/26125698/156955640-ff8d85f3-fec1-4846-b6e5-f18862a405a3.png" width="200">
