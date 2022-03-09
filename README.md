@@ -4,7 +4,7 @@ A mobile application to help users make a group decision on what food to order f
 This is a project for SENG 485A by Joe Zlonicky and Davis Carlson.
 
 ## Resources
-[Milestone slides](https://github.com/DecidrApp/decidr/wiki)  
+[Milestone slides](https://github.com/DecidrApp/decidr/wiki/Milestone-Presentations)  
 [Usage](https://github.com/DecidrApp/decidr/wiki/Usage)  
 [Installation](https://github.com/DecidrApp/decidr/wiki/Installation)  
 [Building the app](https://github.com/DecidrApp/decidr/wiki/Building)  
