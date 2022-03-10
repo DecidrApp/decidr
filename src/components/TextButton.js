@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   buttonText: {
-    fontSize: 40,
+    fontSize: 32,
     fontFamily: 'LeagueGothic-Regular',
     color: COLORS.WHITE,
   },

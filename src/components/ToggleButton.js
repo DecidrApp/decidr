@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontFamily: 'LeagueGothic-Regular',
-    fontSize: 30,
+    fontSize: 32,
     flex: 1,
     color: COLORS.WHITE,
     marginRight: 20,

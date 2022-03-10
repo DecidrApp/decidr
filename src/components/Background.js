@@ -5,7 +5,7 @@ const React = require('react');
 
 const Background = () => (
   <ImageBackground
-    source={require('../assets/images/escheresque_ste.png')}
+    source={require('../assets/images/wallpaper.png')}
     resizeMode="repeat"
     style={styles.background}
   />
