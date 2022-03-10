@@ -7,6 +7,7 @@ export const onCreateRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -16,6 +17,7 @@ export const onUpdateRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -25,6 +27,7 @@ export const onDeleteRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -32,38 +35,62 @@ export const onCreateVote = /* GraphQL */ `
   subscription OnCreateVote($room_id: String) {
     onCreateVote(room_id: $room_id) {
       id
-      room_id {
-        id
-        selected
-        state
+      room_id
+      ranking {
+        name
+        rank
       }
-      order
     }
   }
 `;
 export const onUpdateVote = /* GraphQL */ `
-  subscription OnUpdateVote($id: ID, $room_id: String, $order: [String]) {
-    onUpdateVote(id: $id, room_id: $room_id, order: $order) {
+  subscription OnUpdateVote($id: ID, $room_id: String, $ranking: [String]) {
+    onUpdateVote(id: $id, room_id: $room_id, ranking: $ranking) {
       id
-      room_id {
-        id
-        selected
-        state
+      room_id
+      ranking {
+        name
+        rank
       }
-      order
     }
   }
 `;
 export const onDeleteVote = /* GraphQL */ `
-  subscription OnDeleteVote($id: ID, $room_id: String, $order: [String]) {
-    onDeleteVote(id: $id, room_id: $room_id, order: $order) {
+  subscription OnDeleteVote($id: ID, $room_id: String, $ranking: [String]) {
+    onDeleteVote(id: $id, room_id: $room_id, ranking: $ranking) {
       id
-      room_id {
-        id
-        selected
-        state
+      room_id
+      ranking {
+        name
+        rank
       }
-      order
+    }
+  }
+`;
+export const onCreateRoomUser = /* GraphQL */ `
+  subscription OnCreateRoomUser($room_id: String) {
+    onCreateRoomUser(room_id: $room_id) {
+      id
+      room_id
+      state
+    }
+  }
+`;
+export const onUpdateRoomUser = /* GraphQL */ `
+  subscription OnUpdateRoomUser($room_id: String) {
+    onUpdateRoomUser(room_id: $room_id) {
+      id
+      room_id
+      state
+    }
+  }
+`;
+export const onDeleteRoomUser = /* GraphQL */ `
+  subscription OnDeleteRoomUser($room_id: String) {
+    onDeleteRoomUser(room_id: $room_id) {
+      id
+      room_id
+      state
     }
   }
 `;

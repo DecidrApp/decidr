@@ -1,11 +1,17 @@
 import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
-import Button from '../components/atoms/Button';
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import DraggableFlatList from 'react-native-draggable-flatlist/src/components/DraggableFlatList';
-import Draggable from '../components/atoms/Draggable';
-import {setWinningVote} from '../redux/actions/setWinningVote';
+import Draggable from '../components/Draggable';
+import {
+  getAllBallots,
+  getAllUsersForRoom,
+  submitBallot,
+  updateRoomUserState,
+} from '../apis/AppSync';
+import Background from '../components/Background';
 
 const Vote = ({navigation}) => {
   const listData = sessionStore.getState().suggestions.map(suggestion => {
@@ -16,9 +22,12 @@ const Vote = ({navigation}) => {
   });
 
   const [options, setOptions] = useState(listData);
+  const [userId] = useState(sessionStore.getState().user_id);
 
   return (
     <SafeAreaView style={[styles.background]}>
+      <Background />
+
       <DraggableFlatList
         data={options}
         onDragEnd={({data}) => {
@@ -28,19 +37,34 @@ const Vote = ({navigation}) => {
         renderItem={Draggable}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        ListHeaderComponent={() => <Text style={[styles.title]}>Vote: </Text>}
+        ListHeaderComponent={() => <Text style={[styles.title]}>Vote</Text>}
         ListFooterComponent={() => <View style={[{paddingTop: '40%'}]} />}
       />
       <View style={[styles.voteContainer]}>
-        <Button
+        <TextButton
           text={'Vote'}
           onPress={() => {
-            sessionStore.dispatch(
-              options.length === 0
-                ? setWinningVote('No Winner')
-                : setWinningVote(options[0].label),
-            );
-            navigation.navigate('Result');
+            let ballot = [];
+            for (let i = 0; i < options.length; i++) {
+              ballot.push({name: options[i].key, rank: i + 1});
+            }
+
+            submitBallot(sessionStore.getState().room_id, ballot).then(() => {
+              updateRoomUserState(userId, 'voted').then(() => {
+                getAllBallots(sessionStore.getState().room_id).then(r3 => {
+                  getAllUsersForRoom(sessionStore.getState().room_id).then(
+                    r4 => {
+                      const items = r3?.data?.getVotesForRoom?.items;
+                      // TODO: Save ballot ID to prevent duplicate submission
+                      navigation.navigate('Waiting', {
+                        initialVotes: items ?? [],
+                        initialUsers: r4 ?? [],
+                      });
+                    },
+                  );
+                });
+              });
+            });
           }}
         />
       </View>
@@ -57,11 +81,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.BACKGROUND,
   },
   title: {
-    paddingTop: '10%',
-    fontSize: 32,
+    paddingTop: '5%',
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 48,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: 20,
     color: COLORS.WHITE,
   },
   voteContainer: {

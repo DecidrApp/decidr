@@ -7,6 +7,7 @@ export const getRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -21,6 +22,7 @@ export const listRooms = /* GraphQL */ `
         id
         selected
         state
+        winner
       }
       nextToken
     }
@@ -30,12 +32,26 @@ export const getVote = /* GraphQL */ `
   query GetVote($id: ID!) {
     getVote(id: $id) {
       id
-      room_id {
-        id
-        selected
-        state
+      room_id
+      ranking {
+        name
+        rank
       }
-      order
+    }
+  }
+`;
+export const getVotesForRoom = /* GraphQL */ `
+  query GetVotesForRoom($room_id: String!) {
+    getVotesForRoom(room_id: $room_id) {
+      items {
+        id
+        room_id
+        ranking {
+          name
+          rank
+        }
+      }
+      nextToken
     }
   }
 `;
@@ -48,7 +64,44 @@ export const listVotes = /* GraphQL */ `
     listVotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        order
+        room_id
+      }
+      nextToken
+    }
+  }
+`;
+export const getRoomUser = /* GraphQL */ `
+  query GetRoomUser($id: ID!) {
+    getRoomUser(id: $id) {
+      id
+      room_id
+      state
+    }
+  }
+`;
+export const listRoomUsers = /* GraphQL */ `
+  query ListRoomUsers(
+    $filter: TableRoomUserFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listRoomUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        room_id
+        state
+      }
+      nextToken
+    }
+  }
+`;
+export const queryRoomUsersByRoomIdIndex = /* GraphQL */ `
+  query QueryRoomUsersByRoomIdIndex($room_id: String!) {
+    queryRoomUsersByRoomIdIndex(room_id: $room_id) {
+      items {
+        id
+        room_id
+        state
       }
       nextToken
     }

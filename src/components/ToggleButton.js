@@ -1,9 +1,15 @@
 import React, {useState} from 'react';
 import {Text, TouchableHighlight, StyleSheet, View} from 'react-native';
-import COLORS from '../../styles/colors';
+import COLORS from '../styles/colors';
 
-const Button = ({text, onSelect, onDeselect}) => {
-  const [isSelected, setIsSelected] = useState(false);
+const ToggleButton = ({
+  text,
+  onSelect,
+  onDeselect,
+  alreadySelected = false,
+  styleOverride = {},
+}) => {
+  const [isSelected, setIsSelected] = useState(alreadySelected);
 
   return (
     <TouchableHighlight
@@ -16,11 +22,16 @@ const Button = ({text, onSelect, onDeselect}) => {
           onSelect();
         }
       }}
-      style={styles.button}
+      style={[styles.button, styleOverride]}
       activeOpacity={0.95}
       underlayColor={COLORS.SECONDARY_LIGHT}>
       <View style={styles.container}>
-        <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode={'tail'}>{text}</Text>
+        <Text
+          style={styles.buttonText}
+          numberOfLines={1}
+          ellipsizeMode={'tail'}>
+          {text}
+        </Text>
         <View style={styles.toggle}>
           {isSelected && <View style={styles.toggleOn} />}
         </View>
@@ -32,12 +43,13 @@ const Button = ({text, onSelect, onDeselect}) => {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: COLORS.SECONDARY_DARK,
-    padding: 20,
-    marginBottom: 20,
+    padding: 10,
+    marginBottom: 10,
     borderRadius: 10,
   },
   buttonText: {
-    fontSize: 32,
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 30,
     flex: 1,
     color: COLORS.WHITE,
     marginRight: 20,
@@ -50,15 +62,15 @@ const styles = StyleSheet.create({
     borderColor: COLORS.WHITE,
     borderWidth: 2,
     borderRadius: 5,
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
   },
   toggleOn: {
     backgroundColor: COLORS.WHITE,
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
     margin: 3,
   },
 });
 
-export default Button;
+export default ToggleButton;

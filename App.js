@@ -14,6 +14,7 @@ import Result from './src/screens/Result';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import Amplify from 'aws-amplify';
 import awsmobile from './aws-exports';
+import Waiting from './src/screens/Waiting';
 Amplify.configure(awsmobile);
 
 const Stack = createNativeStackNavigator();
@@ -42,6 +43,11 @@ const App: () => Node = () => {
             <Stack.Screen
               name="Vote"
               component={Vote}
+              options={{headerShown: false, animation: 'none'}}
+            />
+            <Stack.Screen
+              name="Waiting"
+              component={Waiting}
               options={{headerShown: false, animation: 'none'}}
             />
             <Stack.Screen

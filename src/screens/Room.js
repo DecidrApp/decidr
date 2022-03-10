@@ -1,77 +1,159 @@
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
-import Button from '../components/atoms/Button';
-import Suggestion from '../components/atoms/Suggestion';
+import TextButton from '../components/TextButton';
+import Suggestion from '../components/Suggestion';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import {useIsFocused} from '@react-navigation/native';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
 import {API, graphqlOperation} from 'aws-amplify';
-import {onDeleteRoom, onUpdateRoom} from '../graphql/subscriptions';
+import {
+  onCreateRoomUser,
+  onDeleteRoom,
+  onDeleteRoomUser,
+  onUpdateRoom,
+  onUpdateRoomUser,
+} from '../graphql/subscriptions';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import {resetRoom} from '../redux/actions/resetRoom';
-import {closeAppSyncRoom} from '../apis/AppSync';
+import {
+  closeAppSyncRoom,
+  deleteAllBallots,
+  getAllUsersForRoom,
+  removeRoomUser,
+  updateRoomState,
+  updateRoomUserState,
+} from '../apis/AppSync';
+import Background from '../components/Background';
 
-const Room = ({navigation}) => {
-  const [roomCode, setRoomCode] = useState('?????');
-  const [suggestions, setSuggestions] = useState(
-    sessionStore.getState().suggestions,
+const Room = ({route, navigation}) => {
+  // Setup States
+  const [roomCode] = useState(sessionStore.getState().room_id);
+  const [userState, setUserState] = useState(
+    route.params?.userState ?? 'suggesting',
   );
-  const [numParticipants] = useState(1);
+  const [userId] = useState(sessionStore.getState().user_id);
+  const [suggestions, setSuggestions] = useState(
+    sessionStore.getState().suggestions ?? [],
+  );
+  const [numParticipants, setNumParticipants] = useState(
+    route.params?.initialParticipants ?? 1,
+  );
   const isFocused = useIsFocused(); // Force re-render
 
-  function onRoomUpdate(roomData) {
-    // TODO: There should probably be some more checking here to prevent
-    //       race conditions.
-    if (roomData?.value?.data?.onUpdateRoom?.selected) {
-      // Updates are coming through, but screen is not re-rendering
-      setSuggestions(roomData?.value?.data?.onUpdateRoom?.selected);
-      sessionStore.dispatch(
-        addSuggestions(roomData?.value?.data?.onUpdateRoom?.selected),
-      );
-    }
-  }
-
-  // TODO: This might need to be fixed/wrapped in another function
-  function closeRoom() {
+  function closeLeaveRoom() {
     // If user is the host, close the room
-    if (sessionStore.getState().isHost) {
-      closeAppSyncRoom(roomCode);
-    }
-
-    sessionStore.dispatch(resetSuggestions());
-    sessionStore.dispatch(resetRoom());
-    navigation.navigate('Home');
+    removeRoomUser(sessionStore.getState().user_id).then(() => {
+      if (sessionStore.getState().isHost) {
+        deleteAllBallots(roomCode);
+        closeAppSyncRoom(roomCode);
+      }
+      sessionStore.dispatch(resetSuggestions());
+      sessionStore.dispatch(resetRoom());
+      navigation.navigate('Home');
+    });
   }
 
   useEffect(() => {
-    // Get room code from redux for display
-    if (sessionStore.getState().room_id) {
-      setRoomCode(sessionStore.getState().room_id);
+    if (isFocused) {
+      setUserState(route.params?.userState ?? 'suggesting');
     }
+  }, [isFocused, route.params?.userState]);
 
-    const updateSub = API.graphql(
+  // SETUP SUBSCRIPTIONS
+  useEffect(() => {
+    // Helper function for when users join or leave
+    const updateUsers = () => {
+      getAllUsersForRoom(roomCode).then(r => {
+        const users = r ?? [];
+        setNumParticipants(users.length);
+        if (
+          sessionStore.getState().isHost &&
+          !users.some(a => a?.state !== 'ready')
+        ) {
+          // All users are ready
+          updateRoomState(roomCode, 'voting');
+        }
+      });
+    };
+
+    // On Room Updated
+    const updateRoomSub = API.graphql(
       graphqlOperation(onUpdateRoom, {id: sessionStore.getState().room_id}),
     ).subscribe({
-      next: onRoomUpdate,
+      next: data => {
+        // Update selections with value in the DB
+        const selected = data?.value?.data?.onUpdateRoom?.selected;
+        setSuggestions(selected ?? []);
+        sessionStore.dispatch(addSuggestions(selected ?? []));
+
+        // If the state of the room changes to voting, update user state and
+        // transition.
+        const roomState = data?.value?.data?.onUpdateRoom?.state;
+        if (roomState === 'voting') {
+          updateRoomUserState(userId, 'voting');
+          navigation.navigate('Vote');
+        }
+      },
       error: error => console.warn(error),
     });
 
+    // On a new user joining the room
+    const newUserSub = API.graphql(
+      graphqlOperation(onCreateRoomUser, {
+        room_id: roomCode,
+      }),
+    ).subscribe({
+      next: updateUsers,
+      error: error => console.warn(error),
+    });
+
+    // On a user leaving the room
+    const deleteUserSub = API.graphql(
+      graphqlOperation(onDeleteRoomUser, {
+        room_id: roomCode,
+      }),
+    ).subscribe({
+      next: updateUsers,
+      error: error => console.warn(error),
+    });
+
+    // On a user updating their state
+    const updateUserSub = API.graphql(
+      graphqlOperation(onUpdateRoomUser, {
+        room_id: roomCode,
+      }),
+    ).subscribe({
+      next: updateUsers,
+      error: error => console.warn(error),
+    });
+
+    // On room deletion by host
     const deleteSub = API.graphql(
       graphqlOperation(onDeleteRoom, {id: sessionStore.getState().room_id}),
     ).subscribe({
-      next: closeRoom,
+      next: () => {
+        removeRoomUser(sessionStore.getState().user_id);
+        sessionStore.dispatch(resetSuggestions());
+        sessionStore.dispatch(resetRoom());
+        navigation.navigate('Home');
+      },
       error: error => console.warn(error),
     });
 
     return () => {
-      updateSub.unsubscribe();
+      updateRoomSub.unsubscribe();
+      newUserSub.unsubscribe();
+      deleteUserSub.unsubscribe();
+      updateUserSub.unsubscribe();
       deleteSub.unsubscribe();
     };
-  }, [closeRoom]);
+  }, [roomCode, navigation, userId]);
 
   return (
-    <SafeAreaView style={[styles.background]}>
+    <SafeAreaView style={[styles.container]}>
+      <Background />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
@@ -88,23 +170,33 @@ const Room = ({navigation}) => {
       </ScrollView>
 
       <View style={[styles.buttonContainer]}>
-        <Button
-          text={'Add Suggestion'}
-          onPress={() => {
-            navigation.navigate('Suggest');
-          }}
-        />
+        <View style={[styles.rowContainer]}>
+          <TextButton
+            text={'Suggest'}
+            styleOverride={{flex: 1, marginRight: 5}}
+            onPress={() => {
+              navigation.navigate('Suggest');
+            }}
+          />
 
-        <Button
-          text={'Vote'}
-          onPress={() => {
-            navigation.navigate('Vote');
-          }}
-        />
+          <TextButton
+            text={userState === 'suggesting' ? 'Ready' : 'Unready'}
+            styleOverride={{flex: 1, marginLeft: 5}}
+            onPress={() => {
+              if (userState === 'suggesting') {
+                updateRoomUserState(userId, 'ready');
+                setUserState('ready');
+              } else {
+                updateRoomUserState(userId, 'suggesting');
+                setUserState('suggesting');
+              }
+            }}
+          />
+        </View>
 
-        <Button
+        <TextButton
           text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
-          onPress={closeRoom}
+          onPress={closeLeaveRoom}
         />
       </View>
     </SafeAreaView>
@@ -112,23 +204,24 @@ const Room = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  background: {
+  container: {
     flex: 1,
-    flexGrow: 10,
+    flexGrow: 1,
     paddingLeft: '10%',
     paddingRight: '10%',
     backgroundColor: COLORS.BACKGROUND,
   },
   roomCode: {
-    fontSize: 32,
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 48,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: 5,
-    paddingTop: '10%',
+    paddingTop: '5%',
     color: COLORS.WHITE,
   },
   participants: {
-    fontSize: 24,
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 36,
     textAlign: 'center',
     marginBottom: 50,
     color: COLORS.WHITE,
@@ -136,8 +229,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: 'absolute',
     alignSelf: 'center',
-    bottom: '0%',
+    paddingLeft: 5,
+    paddingRight: 5,
+    bottom: '5%',
     width: '100%',
+  },
+  rowContainer: {
+    marginBottom: 10,
+    flexDirection: 'row',
   },
 });
 

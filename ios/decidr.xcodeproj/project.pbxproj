@@ -11,6 +11,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		2A999C8B0E2E4586BCEAD1B1 /* LeagueGothic-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2ADBD28EC0EE4139AB475E93 /* LeagueGothic-Regular.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9505499DF73C05ECCB2CA1A9 /* libPods-decidr-decidrTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F26B0D0CD612D8BB4DA2A128 /* libPods-decidr-decidrTests.a */; };
 		D56C16EBE686B0B526E52397 /* libPods-decidr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B92BC0239706409F7B036DA3 /* libPods-decidr.a */; };
@@ -37,6 +38,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = decidr/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = decidr/main.m; sourceTree = "<group>"; };
 		17CC7C9D729EA97CC55CE8FF /* Pods-decidr-decidrTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-decidr-decidrTests.debug.xcconfig"; path = "Target Support Files/Pods-decidr-decidrTests/Pods-decidr-decidrTests.debug.xcconfig"; sourceTree = "<group>"; };
+		2ADBD28EC0EE4139AB475E93 /* LeagueGothic-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "LeagueGothic-Regular.ttf"; path = "../src/assets/fonts/LeagueGothic-Regular.ttf"; sourceTree = "<group>"; };
 		7E37CD00F99A7B55CAE33B2B /* Pods-decidr-decidrTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-decidr-decidrTests.release.xcconfig"; path = "Target Support Files/Pods-decidr-decidrTests/Pods-decidr-decidrTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = decidr/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		90DF02A055AA55B2D24956F5 /* Pods-decidr.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-decidr.debug.xcconfig"; path = "Target Support Files/Pods-decidr/Pods-decidr.debug.xcconfig"; sourceTree = "<group>"; };
@@ -106,6 +108,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		57C14CA3C74E47269BFF1FED /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2ADBD28EC0EE4139AB475E93 /* LeagueGothic-Regular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,6 +132,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				D721AC1D23DFEF6C44F0172B /* Pods */,
+				57C14CA3C74E47269BFF1FED /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -244,6 +255,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				2A999C8B0E2E4586BCEAD1B1 /* LeagueGothic-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,6 +443,7 @@
 			baseConfigurationReference = 17CC7C9D729EA97CC55CE8FF /* Pods-decidr-decidrTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = MS6JTHQG9Z;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -459,6 +472,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = MS6JTHQG9Z;
 				INFOPLIST_FILE = decidrTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -7,6 +7,7 @@ export const createRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -16,6 +17,7 @@ export const updateRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -25,6 +27,7 @@ export const deleteRoom = /* GraphQL */ `
       id
       selected
       state
+      winner
     }
   }
 `;
@@ -32,12 +35,11 @@ export const createVote = /* GraphQL */ `
   mutation CreateVote($input: CreateVoteInput!) {
     createVote(input: $input) {
       id
-      room_id {
-        id
-        selected
-        state
+      room_id
+      ranking {
+        name
+        rank
       }
-      order
     }
   }
 `;
@@ -45,12 +47,11 @@ export const updateVote = /* GraphQL */ `
   mutation UpdateVote($input: UpdateVoteInput!) {
     updateVote(input: $input) {
       id
-      room_id {
-        id
-        selected
-        state
+      room_id
+      ranking {
+        name
+        rank
       }
-      order
     }
   }
 `;
@@ -58,12 +59,50 @@ export const deleteVote = /* GraphQL */ `
   mutation DeleteVote($input: DeleteVoteInput!) {
     deleteVote(input: $input) {
       id
-      room_id {
-        id
-        selected
-        state
+      room_id
+      ranking {
+        name
+        rank
       }
-      order
+    }
+  }
+`;
+export const deleteVotes = /* GraphQL */ `
+  mutation DeleteVotes($input: DeleteVotesInput!) {
+    deleteVotes(input: $input) {
+      id
+      room_id
+      ranking {
+        name
+        rank
+      }
+    }
+  }
+`;
+export const createRoomUser = /* GraphQL */ `
+  mutation CreateRoomUser($input: CreateRoomUserInput!) {
+    createRoomUser(input: $input) {
+      id
+      room_id
+      state
+    }
+  }
+`;
+export const updateRoomUser = /* GraphQL */ `
+  mutation UpdateRoomUser($input: UpdateRoomUserInput!) {
+    updateRoomUser(input: $input) {
+      id
+      room_id
+      state
+    }
+  }
+`;
+export const deleteRoomUser = /* GraphQL */ `
+  mutation DeleteRoomUser($input: DeleteRoomUserInput!) {
+    deleteRoomUser(input: $input) {
+      id
+      room_id
+      state
     }
   }
 `;

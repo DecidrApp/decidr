@@ -1,187 +1,146 @@
 import React from 'react';
 import {
-  Alert,
-  Modal,
-  PermissionsAndroid,
-  Platform,
+  Keyboard,
   SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Button from '../components/atoms/Button';
+import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
-import {setLocation} from '../redux/actions/setLocation';
 import {setIsHost} from '../redux/actions/setIsHost';
 import sessionStore from '../redux/sessionStore';
-import Geolocation from 'react-native-geolocation-service';
 import {setRoomId} from '../redux/actions/setRoomId';
 import {
   createAppSyncRoom,
   appSyncRoomExists,
   getAppSyncRoom,
+  addRoomUser,
+  getAllUsersForRoom,
 } from '../apis/AppSync';
 import {addSuggestions} from '../redux/actions/addSuggestions';
+import requestLocation from '../apis/requestLocation';
+import roomCreationFailureAlert from '../alerts/roomCreationFailureAlert';
+import missingRoomCodeAlert from '../alerts/missingRoomCodeAlert';
+import joinFailureAlert from '../alerts/joinFailureAlert';
+import Background from '../components/Background';
+import {setRoomUserId} from '../redux/actions/setRoomUserId';
 
 const Home = ({navigation}) => {
-  const [roomCode, onChangeRoomCode] = React.useState('');
+  const [roomCode, setRoomCode] = React.useState('');
 
-  //TODO: Move this code out of here, clean-up, and add more error-handling
-  const getLocation = () => {
-    Geolocation.getCurrentPosition(
-      position => {
-        const long = position.coords.longitude;
-        const lat = position.coords.latitude;
-        sessionStore.dispatch(setLocation(true, long, lat));
-      },
-      error => {
-        // See error code charts below.
-        console.log('Error: ', error.code, error.message);
-        console.error('Location is required');
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
-  };
+  requestLocation();
 
-  if (Platform.OS === 'ios') {
-    Geolocation.requestAuthorization('whenInUse').then(r => {
-      if (r !== 'granted') {
-        console.warn('iOS location not granted');
-        sessionStore.dispatch(setLocation(false, null, null));
+  function hostRoom() {
+    createAppSyncRoom()
+      .then(r => {
+        addRoomUser(r.data.createRoom.id).then(r2 => {
+          sessionStore.dispatch(setRoomUserId(r2));
+          sessionStore.dispatch(setRoomId(r.data.createRoom.id));
+          sessionStore.dispatch(setIsHost(true));
+          navigation.navigate('Room', {
+            initialParticipants: 1,
+          });
+        });
+      })
+      .catch(() => {
+        roomCreationFailureAlert();
+      });
+  }
+
+  function joinRoom() {
+    if (roomCode === '') {
+      missingRoomCodeAlert();
+      return;
+    }
+    appSyncRoomExists(roomCode).then(r => {
+      if (r) {
+        getAppSyncRoom(roomCode).then(r2 => {
+          addRoomUser(roomCode).then(r3 => {
+            getAllUsersForRoom(roomCode).then(r4 => {
+              sessionStore.dispatch(
+                addSuggestions(r2?.data?.getRoom?.selected),
+              );
+              sessionStore.dispatch(setRoomUserId(r3));
+              sessionStore.dispatch(setRoomId(roomCode));
+              sessionStore.dispatch(setIsHost(false));
+              navigation.navigate('Room', {
+                initialParticipants: (r4 ?? []).length,
+              });
+            });
+          });
+        });
       } else {
-        getLocation();
+        joinFailureAlert();
       }
     });
-  } else if (Platform.OS === 'android') {
-    PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: 'Decidr Location Permission',
-        message:
-          'Decidr needs access to your location so nearby restaurants can be found.',
-        buttonPositive: 'OK',
-      },
-    ).then(r => {
-      if (r !== PermissionsAndroid.RESULTS.GRANTED) {
-        console.warn('Android location not granted');
-        sessionStore.dispatch(setLocation(false, null, null));
-      } else {
-        getLocation();
-      }
-    });
-  } else {
-    console.warn('Unable to get location due to unknown platform');
   }
 
   return (
-    <SafeAreaView style={[styles.background]}>
-      <View>
+    <TouchableWithoutFeedback
+      onPress={() => {
+        Keyboard.dismiss();
+      }}
+      accessible={false}>
+      <SafeAreaView style={styles.container}>
+        <Background />
         <Text style={[styles.title]}>{'Decidr'}</Text>
 
-        <Button
-          text={'Host Room'}
-          onPress={() => {
-            createAppSyncRoom()
-              .then(r => {
-                sessionStore.dispatch(setRoomId(r.data.createRoom.id));
-                sessionStore.dispatch(setIsHost(true));
-                navigation.navigate('Room');
-              })
-              .catch(() => {
-                Alert.alert(
-                  'Unable to create room',
-                  'Hmm something went wrong trying to create a room, please try again.',
-                  [
-                    {
-                      text: 'Dismiss',
-                      style: 'cancel',
-                    },
-                  ],
-                );
-                return;
-              });
-          }}
-        />
-        <TextInput
-          style={styles.input}
-          onChangeText={onChangeRoomCode}
-          value={roomCode}
-          placeholder={'Room Code'}
-          autoCapitalize={'none'}
-          autoCorrect={false}
-        />
-        <Button
-          text={'Join Room'}
-          onPress={() => {
-            if (roomCode === '') {
-              Alert.alert(
-                'Missing room code',
-                'Please make sure you enter a room code.',
-                [
-                  {
-                    text: 'Dismiss',
-                    style: 'cancel',
-                  },
-                ],
-              );
-              return;
-            }
-            appSyncRoomExists(roomCode).then(r => {
-              if (r) {
-                getAppSyncRoom(roomCode).then(r => {
-                  sessionStore.dispatch(
-                    addSuggestions(r?.data?.getRoom?.selected),
-                  );
-                  sessionStore.dispatch(setRoomId(roomCode));
-                  sessionStore.dispatch(setIsHost(false));
-                  navigation.navigate('Room');
-                });
-              } else {
-                Alert.alert(
-                  'Unable to join room',
-                  "Hmm we can't seem to find that room. Are you sure your code is correct?",
-                  [
-                    {
-                      text: 'Dismiss',
-                      style: 'cancel',
-                    },
-                  ],
-                );
-              }
-            });
-          }}
-        />
-      </View>
-    </SafeAreaView>
+        <TextButton text={'Host Room'} onPress={hostRoom} />
+        <View style={styles.rowContainer}>
+          <TextInput
+            style={styles.input}
+            onChangeText={setRoomCode}
+            value={roomCode}
+            textAlign={'left'}
+            placeholder={'Room Code'}
+            placeholderTextColor={COLORS.SECONDARY_LIGHT}
+            autoCapitalize={'none'}
+            autoCorrect={false}
+          />
+          <TextButton
+            text={'Join Room'}
+            styleOverride={{flex: 2}}
+            onPress={joinRoom}
+          />
+        </View>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
+  container: {
     flex: 1,
-    flexGrow: 10,
     paddingTop: '20%',
     paddingLeft: '10%',
     paddingRight: '10%',
-    backgroundColor: COLORS.BACKGROUND,
+  },
+  rowContainer: {
+    marginTop: 20,
+    flexDirection: 'row',
   },
   title: {
-    fontSize: 48,
+    fontSize: 64,
     fontWeight: '600',
+    fontFamily: 'LeagueGothic-Regular',
     textAlign: 'center',
-    marginBottom: 50,
+    marginBottom: 30,
     color: COLORS.WHITE,
   },
   input: {
-    margin: 10,
+    flex: 1,
     paddingLeft: 10,
     paddingRight: 10,
-    textAlign: 'center',
     textTransform: 'lowercase',
-    height: 30,
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 25,
+    color: COLORS.BLACK,
     borderRadius: 10,
     backgroundColor: COLORS.WHITE,
+    marginRight: 5,
   },
 });
 
