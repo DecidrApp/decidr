@@ -1,6 +1,8 @@
 # Decidr
 A mobile application to help users make a group decision on what food to order from your local food delivery app.
 
+The product page, where you can get the APK, can be found here: https://decidrapp.github.io/  
+
 This is a project for SENG 485A by Joe Zlonicky and Davis Carlson.
 
 ## Resources
