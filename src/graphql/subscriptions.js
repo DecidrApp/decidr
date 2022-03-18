@@ -5,7 +5,10 @@ export const onCreateRoom = /* GraphQL */ `
   subscription OnCreateRoom($id: ID, $selected: [String], $state: String) {
     onCreateRoom(id: $id, selected: $selected, state: $state) {
       id
-      selected
+      selected {
+        name
+        cleanurl
+      }
       state
       winner
     }
@@ -15,7 +18,10 @@ export const onUpdateRoom = /* GraphQL */ `
   subscription OnUpdateRoom($id: ID) {
     onUpdateRoom(id: $id) {
       id
-      selected
+      selected {
+        name
+        cleanurl
+      }
       state
       winner
     }
@@ -25,7 +31,10 @@ export const onDeleteRoom = /* GraphQL */ `
   subscription OnDeleteRoom($id: ID) {
     onDeleteRoom(id: $id) {
       id
-      selected
+      selected {
+        name
+        cleanurl
+      }
       state
       winner
     }

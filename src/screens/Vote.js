@@ -16,8 +16,8 @@ import Background from '../components/Background';
 const Vote = ({navigation}) => {
   const listData = sessionStore.getState().suggestions.map(suggestion => {
     return {
-      key: suggestion,
-      label: suggestion,
+      key: suggestion.name,
+      label: suggestion.name,
     };
   });
 
