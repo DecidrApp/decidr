@@ -45,7 +45,7 @@ const Waiting = ({navigation, route}) => {
             !users.some(a => a?.state !== 'voted')
           ) {
             const winner = calculateRanking(
-              sessionStore.getState().suggestions,
+              sessionStore.getState().suggestions.map(a => a.name),
               ballots,
             )[0];
             // All users are ready

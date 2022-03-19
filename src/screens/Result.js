@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {Linking, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
@@ -68,11 +68,40 @@ const Result = ({navigation}) => {
     };
   }, [navigation]);
 
+  function showSkipButton() {
+    const cleanUrl = sessionStore
+      .getState()
+      .suggestions.find(
+        a => a.name === sessionStore.getState().winningVote,
+      )?.cleanurl;
+
+    if (cleanUrl) {
+      return (
+        <TextButton
+          text="Go to Restaurant in SkipTheDishes ↗"
+          onPress={() => {
+            const urlToOpen = 'https://skipthedishes.com/' + cleanUrl;
+
+            Linking.canOpenURL(urlToOpen).then(supported => {
+              if (supported) {
+                Linking.openURL(urlToOpen);
+              } else {
+                console.log("Don't know how to open URI: " + urlToOpen);
+              }
+            });
+          }}
+        />
+      );
+    }
+  }
+
   return (
     <SafeAreaView style={styles.background}>
       <Background />
 
       <Text style={styles.result}>{sessionStore.getState().winningVote}</Text>
+
+      {showSkipButton()}
 
       <View style={styles.buttonContainer}>
         {sessionStore.getState().isHost && (
