@@ -19,6 +19,14 @@ const Vote = ({route, navigation}) => {
   const {page} = route.params;
   const NUM_OF_PAGES = 3;
 
+  useEffect(() => {
+    navigation.addListener('beforeRemove', e => {
+      sessionStore.dispatch(
+        setBallot(sessionStore.getState().ballot.slice(0, -1)),
+      );
+    });
+  }, [navigation]);
+
   const submit = () => {
     const ballot = sessionStore.getState().ballot;
 
@@ -70,7 +78,7 @@ const Vote = ({route, navigation}) => {
                   sessionStore.dispatch(setBallot([]));
                   navigation.navigate('Waiting');
                 } else {
-                  navigation.navigate('Vote' + String(page + 1), {
+                  navigation.push('Vote', {
                     page: page + 1,
                   });
                 }
