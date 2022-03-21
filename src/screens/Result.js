@@ -31,6 +31,12 @@ const Result = ({navigation}) => {
   }
 
   useEffect(() => {
+    // Disable going back for this screen
+    // TODO: Uncomment this code when everything works
+    // navigation.addListener('beforeRemove', e => {
+    //   e.preventDefault();
+    // });
+
     // Listen for host closing the voting period and closing room
     const deleteSub = API.graphql(
       graphqlOperation(onDeleteRoom, {id: sessionStore.getState().room_id}),
@@ -109,10 +115,8 @@ const Result = ({navigation}) => {
             text={'Return all to Room'}
             styleOverride={{marginBottom: 10}}
             onPress={() => {
-              if (sessionStore.getState().isHost) {
-                updateRoomState(sessionStore.getState().room_id, 'open');
-                deleteAllBallots(sessionStore.getState().room_id);
-              }
+              updateRoomState(sessionStore.getState().room_id, 'open');
+              deleteAllBallots(sessionStore.getState().room_id);
             }}
           />
         )}

@@ -1,10 +1,8 @@
-import React, {useState} from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 import TextButton from '../components/TextButton';
 import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
-import DraggableFlatList from 'react-native-draggable-flatlist/src/components/DraggableFlatList';
-import Draggable from '../components/Draggable';
 import {
   getAllBallots,
   getAllUsersForRoom,
@@ -12,59 +10,83 @@ import {
   updateRoomUserState,
 } from '../apis/AppSync';
 import Background from '../components/Background';
+import VoteOptionButton from '../components/VoteOptionButton';
+import {setBallot} from '../redux/actions/setBallot';
 
-const Vote = ({navigation}) => {
-  const listData = sessionStore.getState().suggestions.map(suggestion => {
-    return {
-      key: suggestion.name,
-      label: suggestion.name,
-    };
-  });
-
-  const [options, setOptions] = useState(listData);
+const Vote = ({route, navigation}) => {
   const [userId] = useState(sessionStore.getState().user_id);
+
+  const {page} = route.params;
+  const NUM_OF_PAGES = 3;
+
+  const submit = () => {
+    const ballot = sessionStore.getState().ballot;
+
+    submitBallot(sessionStore.getState().room_id, ballot).then(() => {
+      updateRoomUserState(userId, 'voted').then(() => {
+        getAllBallots(sessionStore.getState().room_id).then(r3 => {
+          getAllUsersForRoom(sessionStore.getState().room_id).then(r4 => {
+            const items = r3?.data?.getVotesForRoom?.items;
+            // TODO: Save ballot ID to prevent duplicate submission
+            navigation.navigate('Waiting', {
+              initialVotes: items ?? [],
+              initialUsers: r4 ?? [],
+            });
+          });
+        });
+      });
+    });
+  };
 
   return (
     <SafeAreaView style={[styles.background]}>
       <Background />
 
-      <DraggableFlatList
-        data={options}
-        onDragEnd={({data}) => {
-          setOptions(data);
-        }}
-        keyExtractor={item => item.key}
-        renderItem={Draggable}
+      <ScrollView
         showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        ListHeaderComponent={() => <Text style={[styles.title]}>Vote</Text>}
-        ListFooterComponent={() => <View style={[{paddingTop: '40%'}]} />}
-      />
+        showsHorizontalScrollIndicator={false}>
+        <Text style={[styles.title]}>Vote for your #{page}</Text>
+
+        {sessionStore.getState().suggestions.map(option => {
+          for (const entry of sessionStore.getState().ballot) {
+            if (option.name === entry.name) {
+              return;
+            }
+          }
+
+          return (
+            <VoteOptionButton
+              option={option}
+              key={option.name}
+              onPress={() => {
+                sessionStore.dispatch(
+                  setBallot([
+                    ...sessionStore.getState().ballot,
+                    {name: option.name, rank: page},
+                  ]),
+                );
+                if (page === NUM_OF_PAGES) {
+                  submit();
+                  sessionStore.dispatch(setBallot([]));
+                  navigation.navigate('Waiting');
+                } else {
+                  navigation.navigate('Vote' + String(page + 1), {
+                    page: page + 1,
+                  });
+                }
+              }}
+            />
+          );
+        })}
+      </ScrollView>
+
       <View style={[styles.voteContainer]}>
         <TextButton
-          text={'Vote'}
+          text={'No Preference'}
           onPress={() => {
-            let ballot = [];
-            for (let i = 0; i < options.length; i++) {
-              ballot.push({name: options[i].key, rank: i + 1});
-            }
-
-            submitBallot(sessionStore.getState().room_id, ballot).then(() => {
-              updateRoomUserState(userId, 'voted').then(() => {
-                getAllBallots(sessionStore.getState().room_id).then(r3 => {
-                  getAllUsersForRoom(sessionStore.getState().room_id).then(
-                    r4 => {
-                      const items = r3?.data?.getVotesForRoom?.items;
-                      // TODO: Save ballot ID to prevent duplicate submission
-                      navigation.navigate('Waiting', {
-                        initialVotes: items ?? [],
-                        initialUsers: r4 ?? [],
-                      });
-                    },
-                  );
-                });
-              });
-            });
+            submit();
+            sessionStore.dispatch(setBallot([]));
+            navigation.navigate('Waiting');
           }}
         />
       </View>

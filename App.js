@@ -46,6 +46,16 @@ const App: () => Node = () => {
               options={{headerShown: false, animation: 'none'}}
             />
             <Stack.Screen
+              name="Vote2"
+              component={Vote}
+              options={{headerShown: false, animation: 'none'}}
+            />
+            <Stack.Screen
+              name="Vote3"
+              component={Vote}
+              options={{headerShown: false, animation: 'none'}}
+            />
+            <Stack.Screen
               name="Waiting"
               component={Waiting}
               options={{headerShown: false, animation: 'none'}}
