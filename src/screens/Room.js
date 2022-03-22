@@ -93,7 +93,7 @@ const Room = ({route, navigation}) => {
         const roomState = data?.value?.data?.onUpdateRoom?.state;
         if (roomState === 'voting') {
           updateRoomUserState(userId, 'voting');
-          navigation.navigate('Vote');
+          navigation.navigate('Vote', {page: 1});
         }
       },
       error: error => console.warn(error),
