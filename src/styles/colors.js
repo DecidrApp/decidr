@@ -6,6 +6,7 @@ const SECONDARY_LIGHT = '#766b7c';
 const SECONDARY_DARK = '#403944';
 const BACKGROUND = '#26252c';
 const WHITE = '#FFFFFF';
+const OFF_WHITE = '#CCCCCC';
 const BLACK = '#000000';
 
 const COLORS = {
@@ -18,6 +19,7 @@ const COLORS = {
   BACKGROUND,
   BLACK,
   WHITE,
+  OFF_WHITE,
 };
 
 export default COLORS;
