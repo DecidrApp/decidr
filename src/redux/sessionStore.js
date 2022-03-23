@@ -9,12 +9,14 @@ import {
   RESET_ROOM,
   SET_ROOM_USER_ID,
   SET_ROOM_USER_STATE,
+  SET_BALLOT,
 } from './types';
 
 const initialState = {
   isHost: false,
   winningVote: '',
   suggestions: [],
+  ballot: [],
   location_granted: false,
   longitude: 0.0,
   latitude: 0.0,
@@ -79,6 +81,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         user_state: action.payload.user_state,
+      };
+    case SET_BALLOT:
+      return {
+        ...state,
+        ballot: action.payload.slice(),
       };
     default:
       return state;

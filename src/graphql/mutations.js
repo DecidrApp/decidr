@@ -5,7 +5,10 @@ export const createRoom = /* GraphQL */ `
   mutation CreateRoom($input: CreateRoomInput!) {
     createRoom(input: $input) {
       id
-      selected
+      selected {
+        name
+        cleanurl
+      }
       state
       winner
     }
@@ -15,7 +18,10 @@ export const updateRoom = /* GraphQL */ `
   mutation UpdateRoom($input: UpdateRoomInput!) {
     updateRoom(input: $input) {
       id
-      selected
+      selected {
+        name
+        cleanurl
+      }
       state
       winner
     }
@@ -25,7 +31,10 @@ export const deleteRoom = /* GraphQL */ `
   mutation DeleteRoom($input: DeleteRoomInput!) {
     deleteRoom(input: $input) {
       id
-      selected
+      selected {
+        name
+        cleanurl
+      }
       state
       winner
     }

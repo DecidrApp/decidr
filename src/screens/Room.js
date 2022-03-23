@@ -85,6 +85,7 @@ const Room = ({route, navigation}) => {
         // Update selections with value in the DB
         const selected = data?.value?.data?.onUpdateRoom?.selected;
         setSuggestions(selected ?? []);
+        sessionStore.dispatch(resetSuggestions());
         sessionStore.dispatch(addSuggestions(selected ?? []));
 
         // If the state of the room changes to voting, update user state and
@@ -92,7 +93,7 @@ const Room = ({route, navigation}) => {
         const roomState = data?.value?.data?.onUpdateRoom?.state;
         if (roomState === 'voting') {
           updateRoomUserState(userId, 'voting');
-          navigation.navigate('Vote');
+          navigation.navigate('Vote', {page: 1});
         }
       },
       error: error => console.warn(error),
@@ -163,7 +164,7 @@ const Room = ({route, navigation}) => {
         </Text>
 
         {suggestions.map(suggestion => (
-          <Suggestion text={suggestion} key={suggestion} />
+          <Suggestion text={suggestion?.name} key={suggestion?.name} />
         ))}
 
         <View style={[{paddingTop: '70%'}]} />

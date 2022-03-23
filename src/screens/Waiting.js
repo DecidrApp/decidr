@@ -32,6 +32,12 @@ const Waiting = ({navigation, route}) => {
 
   // SETUP SUBSCRIPTIONS
   useEffect(() => {
+    // Disable going back while waiting
+    // TODO: Uncomment this code when everything works
+    // navigation.addListener('beforeRemove', e => {
+    //   e.preventDefault();
+    // });
+
     // Helper function for when users update their state
     const updateUsers = () => {
       getAllUsersForRoom(roomCode).then(r => {
@@ -45,7 +51,7 @@ const Waiting = ({navigation, route}) => {
             !users.some(a => a?.state !== 'voted')
           ) {
             const winner = calculateRanking(
-              sessionStore.getState().suggestions,
+              sessionStore.getState().suggestions.map(a => a.name),
               ballots,
             )[0];
             // All users are ready

@@ -36,6 +36,7 @@ function callApi(latitude, longitude, search) {
             ? x?.distance?.value
             : x?.distance?.value * 1000,
         imageUrls: x?.imageUrls,
+        cleanUrl: x?.cleanUrl,
       };
     });
   }

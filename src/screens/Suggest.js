@@ -44,14 +44,14 @@ const Suggest = ({navigation}) => {
   }, []);
 
   //TODO: I'm noticing some lag when selecting, seems to increase with # selected
-  const suggestionSelected = name => {
+  const suggestionSelected = obj => {
     setNumSelected(numSelected + 1);
-    setSelected([...selected, name]);
+    setSelected([...selected, obj]);
   };
 
   const suggestionDeselected = name => {
     setNumSelected(numSelected - 1);
-    setSelected(selected.filter(item => item !== name));
+    setSelected(selected.filter(item => item.name !== name));
   };
 
   const restaurantNameExists = name => {
@@ -93,7 +93,9 @@ const Suggest = ({navigation}) => {
               styleOverride={{marginBottom: 20}}
               onSelect={() => {
                 setCustomOptions([...customOptions, searchTerm]);
-                suggestionSelected(searchTerm);
+                suggestionSelected({
+                  name: searchTerm,
+                });
               }}
               onDeselect={() => {
                 suggestionDeselected(searchTerm);
@@ -110,7 +112,9 @@ const Suggest = ({navigation}) => {
               text={option}
               key={option}
               onSelect={() => {
-                suggestionSelected(option);
+                suggestionSelected({
+                  name: option,
+                });
               }}
               onDeselect={() => {
                 suggestionDeselected(option);
@@ -131,7 +135,10 @@ const Suggest = ({navigation}) => {
               text={restaurant.name}
               key={restaurant.id}
               onSelect={() => {
-                suggestionSelected(restaurant.name);
+                suggestionSelected({
+                  name: restaurant.name,
+                  cleanurl: restaurant.cleanUrl,
+                });
               }}
               onDeselect={() => {
                 suggestionDeselected(restaurant.name);
@@ -161,7 +168,6 @@ const Suggest = ({navigation}) => {
                 }),
               );
             }
-            sessionStore.dispatch(addSuggestions(selected));
             navigation.navigate('Room');
           }}
         />
