@@ -16,6 +16,7 @@ import Amplify from 'aws-amplify';
 import awsmobile from './aws-exports';
 import Waiting from './src/screens/Waiting';
 import TiedResult from './src/screens/TiedResult';
+import SpinningWheel from './src/screens/SpinningWheel';
 Amplify.configure(awsmobile);
 
 const Stack = createNativeStackNavigator();
@@ -54,6 +55,11 @@ const App: () => Node = () => {
             <Stack.Screen
               name="TiedResult"
               component={TiedResult}
+              options={{headerShown: false, animation: 'none'}}
+            />
+            <Stack.Screen
+              name="SpinningWheel"
+              component={SpinningWheel}
               options={{headerShown: false, animation: 'none'}}
             />
             <Stack.Screen

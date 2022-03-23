@@ -5,7 +5,7 @@ import COLORS from '../styles/colors';
 import sessionStore from '../redux/sessionStore';
 import Background from '../components/Background';
 
-const Result = ({navigation}) => {
+const TiedResult = ({navigation}) => {
   const [tieRunners] = useState(['Option 1', 'Option 2', 'Option 3']);
 
   useEffect(() => {
@@ -96,4 +96,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Result;
+export default TiedResult;
