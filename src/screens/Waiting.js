@@ -18,7 +18,7 @@ import {
 } from '../apis/AppSync';
 import {setWinningVote} from '../redux/actions/setWinningVote';
 import Background from '../components/Background';
-import {calculateRanking} from '../apis/Voting';
+import {calculateRanking} from '../apis/VotingV2';
 
 const Waiting = ({navigation, route}) => {
   const [roomCode] = useState(sessionStore.getState().room_id);
@@ -53,7 +53,12 @@ const Waiting = ({navigation, route}) => {
             const winner = calculateRanking(
               sessionStore.getState().suggestions.map(a => a.name),
               ballots,
-            )[0];
+            );
+
+            if (winner === 'tied') {
+              // TODO: Do something here
+            }
+
             // All users are ready
             updateRoomWinner(roomCode, winner).then(() => {
               updateRoomState(roomCode, 'result');

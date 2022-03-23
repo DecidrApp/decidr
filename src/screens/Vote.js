@@ -20,7 +20,7 @@ const Vote = ({route, navigation}) => {
   const NUM_OF_PAGES = 3;
 
   useEffect(() => {
-    navigation.addListener('beforeRemove', e => {
+    navigation.addListener('beforeRemove', () => {
       sessionStore.dispatch(
         setBallot(sessionStore.getState().ballot.slice(0, -1)),
       );
@@ -73,7 +73,10 @@ const Vote = ({route, navigation}) => {
                     {name: option.name, rank: page},
                   ]),
                 );
-                if (page === NUM_OF_PAGES) {
+                if (
+                  page === NUM_OF_PAGES ||
+                  page === sessionStore.getState().suggestions.length
+                ) {
                   submit();
                   sessionStore.dispatch(setBallot([]));
                   navigation.navigate('Waiting');
