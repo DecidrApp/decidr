@@ -15,6 +15,10 @@ const irv = ballots => {
     ['?', Infinity],
   );
 
+  if (topCount === ballots.length / 2 && candidates.length === 2) {
+    return 'tied';
+  }
+
   return topCount > ballots.length / 2
     ? topCand
     : irv(

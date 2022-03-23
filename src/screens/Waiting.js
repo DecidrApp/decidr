@@ -54,6 +54,11 @@ const Waiting = ({navigation, route}) => {
               sessionStore.getState().suggestions.map(a => a.name),
               ballots,
             );
+
+            if (winner === 'tied') {
+              // TODO: Do something here
+            }
+
             // All users are ready
             updateRoomWinner(roomCode, winner).then(() => {
               updateRoomState(roomCode, 'result');
