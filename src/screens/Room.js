@@ -177,19 +177,17 @@ const Room = ({route, navigation}) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
-        <Text style={[styles.roomCode]}>{'Room Code: ' + roomCode}</Text>
-        {/*<Text style={[styles.participants]}>*/}
-        {/*  {String(numParticipants) + ' participants'}*/}
-        {/*</Text>*/}
-        <View
-          style={[
-            {
-              marginTop: 0,
-              flexDirection: 'row',
-              justifyContent: 'center',
-            },
-          ]}>
-          {createPeopleIcons(numParticipants, numReady)}
+        <View style={[styles.header]}>
+          <View style={[styles.headerRoomInfo]}>
+            <Text style={[styles.roomCodeTitle]}>{'ROOM CODE'}</Text>
+            <Text style={[styles.roomCode]}>{roomCode}</Text>
+          </View>
+          {/*<Text style={[styles.participants]}>*/}
+          {/*  {String(numParticipants) + ' participants'}*/}
+          {/*</Text>*/}
+          <View style={[styles.headerParticipants]}>
+            {createPeopleIcons(numParticipants, numReady)}
+          </View>
         </View>
 
         {suggestions.map(suggestion => (
@@ -243,12 +241,41 @@ const styles = StyleSheet.create({
     paddingRight: '10%',
     backgroundColor: COLORS.BACKGROUND,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 6,
+  },
+  headerRoomInfo: {
+    flexDirection: 'column',
+  },
+  headerParticipants: {
+    flexGrow: 1,
+    marginTop: 18,
+    marginRight: 6,
+    maxWidth: '60%',
+    flexDirection: 'row',
+    alignContent: 'center',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+  },
+  roomCodeTitle: {
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 24,
+    fontWeight: '600',
+    textAlign: 'left',
+    paddingTop: '5%',
+    marginBottom: -10,
+    marginLeft: 12,
+    color: COLORS.SECONDARY_LIGHT,
+  },
   roomCode: {
     fontFamily: 'LeagueGothic-Regular',
-    fontSize: 48,
+    fontSize: 60,
     fontWeight: '600',
-    textAlign: 'center',
+    textAlign: 'left',
     paddingTop: '5%',
+    marginLeft: 12,
     color: COLORS.WHITE,
   },
   participants: {
