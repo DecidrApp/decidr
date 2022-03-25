@@ -21,9 +21,10 @@ import {
 
 function generateCode() {
   return Math.random()
-    .toString(36)
-    .replace(/[^a-np-z1-9]+/, '')
-    .slice(0, 3);
+    .toString(10)
+    .replace(/[^A-HJ-NP-Za-hj-np-z2-9]+/, '')
+    .slice(0, 3)
+    .toUpperCase();
 }
 
 // ------------------------------------------------

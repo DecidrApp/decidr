@@ -25,6 +25,7 @@ import {
   updateRoomUserState,
 } from '../apis/AppSync';
 import Background from '../components/Background';
+import PersonIcon from '../assets/images/person.svg';
 
 const Room = ({route, navigation}) => {
   // Setup States
@@ -39,6 +40,7 @@ const Room = ({route, navigation}) => {
   const [numParticipants, setNumParticipants] = useState(
     route.params?.initialParticipants ?? 1,
   );
+  const [numReady, setNumReady] = useState(0);
   const isFocused = useIsFocused(); // Force re-render
 
   function closeLeaveRoom() {
@@ -67,6 +69,7 @@ const Room = ({route, navigation}) => {
       getAllUsersForRoom(roomCode).then(r => {
         const users = r ?? [];
         setNumParticipants(users.length);
+        setNumReady(users.filter(a => a.state === 'ready').length);
         if (
           sessionStore.getState().isHost &&
           !users.some(a => a?.state !== 'ready')
@@ -151,6 +154,22 @@ const Room = ({route, navigation}) => {
     };
   }, [roomCode, navigation, userId]);
 
+  const createPeopleIcons = (total, ready) => {
+    let icons = [];
+    for (let i = 0; i < total; i++) {
+      icons.push(
+        <PersonIcon
+          stroke={i < total - ready ? '#d61a1a' : '#489c11'}
+          key={'person-' + i}
+          fillOpacity={0}
+          width={40}
+          height={40}
+        />,
+      );
+    }
+    return icons.reverse();
+  };
+
   return (
     <SafeAreaView style={[styles.container]}>
       <Background />
@@ -159,9 +178,19 @@ const Room = ({route, navigation}) => {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
         <Text style={[styles.roomCode]}>{'Room Code: ' + roomCode}</Text>
-        <Text style={[styles.participants]}>
-          {String(numParticipants) + ' participants'}
-        </Text>
+        {/*<Text style={[styles.participants]}>*/}
+        {/*  {String(numParticipants) + ' participants'}*/}
+        {/*</Text>*/}
+        <View
+          style={[
+            {
+              marginTop: 0,
+              flexDirection: 'row',
+              justifyContent: 'center',
+            },
+          ]}>
+          {createPeopleIcons(numParticipants, numReady)}
+        </View>
 
         {suggestions.map(suggestion => (
           <Suggestion text={suggestion?.name} key={suggestion?.name} />
@@ -185,9 +214,11 @@ const Room = ({route, navigation}) => {
             styleOverride={{flex: 1, marginLeft: 5}}
             onPress={() => {
               if (userState === 'suggesting') {
+                setNumReady(numReady + 1);
                 updateRoomUserState(userId, 'ready');
                 setUserState('ready');
               } else {
+                setNumReady(numReady - 1);
                 updateRoomUserState(userId, 'suggesting');
                 setUserState('suggesting');
               }
