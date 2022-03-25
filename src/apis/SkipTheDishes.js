@@ -26,19 +26,24 @@ const CONST_BODY = {
 function callApi(latitude, longitude, search) {
   // Parse the data
   function parseData(data) {
-    return data.map(x => {
-      return {
-        id: x?.id,
-        name: x?.name,
-        tags: x?.cuisines,
-        distance:
-          x?.distance?.unit === 'KM'
-            ? x?.distance?.value
-            : x?.distance?.value * 1000,
-        imageUrls: x?.imageUrls,
-        cleanUrl: x?.cleanUrl,
-      };
-    });
+    return data
+      .map(x => {
+        return {
+          id: x?.id,
+          name: x?.name,
+          tags: x?.cuisines,
+          distance:
+            x?.distance?.unit === 'KM'
+              ? x?.distance?.value
+              : x?.distance?.value * 1000,
+          imageUrls: x?.imageUrls,
+          cleanUrl: x?.cleanUrl,
+        };
+      })
+      .filter(
+        (value, index, self) =>
+          index === self.findIndex(t => t.name === value.name),
+      );
   }
 
   return axios
