@@ -26,6 +26,7 @@ import {
 } from '../apis/AppSync';
 import Background from '../components/Background';
 import PersonIcon from '../assets/images/person.svg';
+import ActivityIndicatorButton from '../components/ActivityIndicatorButton';
 
 const Room = ({route, navigation}) => {
   // Setup States
@@ -41,6 +42,7 @@ const Room = ({route, navigation}) => {
     route.params?.initialParticipants ?? 1,
   );
   const [numReady, setNumReady] = useState(0);
+  const [readyLoading, setReadyLoading] = useState(false);
   const isFocused = useIsFocused(); // Force re-render
 
   function closeLeaveRoom() {
@@ -67,6 +69,7 @@ const Room = ({route, navigation}) => {
     // Helper function for when users join or leave
     const updateUsers = () => {
       getAllUsersForRoom(roomCode).then(r => {
+        setReadyLoading(false);
         const users = r ?? [];
         setNumParticipants(users.length);
         setNumReady(users.filter(a => a.state === 'ready').length);
@@ -170,6 +173,33 @@ const Room = ({route, navigation}) => {
     return icons.reverse();
   };
 
+  const readyButton = () => {
+    if (!readyLoading) {
+      return (
+        <TextButton
+          text={userState === 'suggesting' ? 'Ready' : 'Unready'}
+          styleOverride={{flex: 1, marginLeft: 5}}
+          onPress={() => {
+            setReadyLoading(true);
+            if (userState === 'suggesting') {
+              setNumReady(numReady + 1);
+              updateRoomUserState(userId, 'ready');
+              setUserState('ready');
+            } else {
+              setNumReady(numReady - 1);
+              updateRoomUserState(userId, 'suggesting');
+              setUserState('suggesting');
+            }
+          }}
+        />
+      );
+    } else {
+      return (
+        <ActivityIndicatorButton styleOverride={{flex: 1, marginLeft: 5}} />
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container]}>
       <Background />
@@ -207,21 +237,7 @@ const Room = ({route, navigation}) => {
             }}
           />
 
-          <TextButton
-            text={userState === 'suggesting' ? 'Ready' : 'Unready'}
-            styleOverride={{flex: 1, marginLeft: 5}}
-            onPress={() => {
-              if (userState === 'suggesting') {
-                setNumReady(numReady + 1);
-                updateRoomUserState(userId, 'ready');
-                setUserState('ready');
-              } else {
-                setNumReady(numReady - 1);
-                updateRoomUserState(userId, 'suggesting');
-                setUserState('suggesting');
-              }
-            }}
-          />
+          {readyButton()}
         </View>
 
         <TextButton
