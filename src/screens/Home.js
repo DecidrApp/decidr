@@ -27,16 +27,21 @@ import missingRoomCodeAlert from '../alerts/missingRoomCodeAlert';
 import joinFailureAlert from '../alerts/joinFailureAlert';
 import Background from '../components/Background';
 import {setRoomUserId} from '../redux/actions/setRoomUserId';
+import ActivityIndicatorButton from '../components/ActivityIndicatorButton';
 
 const Home = ({navigation}) => {
   const [roomCode, setRoomCode] = React.useState('');
+  const [joiningRoom, setJoiningRoom] = React.useState(false);
+  const [hostingRoom, setHostingRoom] = React.useState(false);
 
   requestLocation();
 
   function hostRoom() {
+    setHostingRoom(true);
     createAppSyncRoom()
       .then(r => {
         addRoomUser(r.data.createRoom.id).then(r2 => {
+          setHostingRoom(false);
           sessionStore.dispatch(setRoomUserId(r2));
           sessionStore.dispatch(setRoomId(r.data.createRoom.id));
           sessionStore.dispatch(setIsHost(true));
@@ -46,12 +51,15 @@ const Home = ({navigation}) => {
         });
       })
       .catch(() => {
+        setHostingRoom(false);
         roomCreationFailureAlert();
       });
   }
 
   function joinRoom() {
+    setJoiningRoom(true);
     if (roomCode === '') {
+      setJoiningRoom(false);
       missingRoomCodeAlert();
       return;
     }
@@ -60,6 +68,7 @@ const Home = ({navigation}) => {
         getAppSyncRoom(roomCode).then(r2 => {
           addRoomUser(roomCode).then(r3 => {
             getAllUsersForRoom(roomCode).then(r4 => {
+              setJoiningRoom(false);
               sessionStore.dispatch(
                 addSuggestions(r2?.data?.getRoom?.selected),
               );
@@ -73,10 +82,33 @@ const Home = ({navigation}) => {
           });
         });
       } else {
+        setJoiningRoom(false);
         joinFailureAlert();
       }
     });
   }
+
+  const hostButton = () => {
+    if (hostingRoom) {
+      return <ActivityIndicatorButton />;
+    } else {
+      return <TextButton text={'Host Room'} onPress={hostRoom} />;
+    }
+  };
+
+  const joinButton = () => {
+    if (joiningRoom) {
+      return <ActivityIndicatorButton styleOverride={{flex: 2}} />;
+    } else {
+      return (
+        <TextButton
+          text={'Join Room'}
+          styleOverride={{flex: 2}}
+          onPress={joinRoom}
+        />
+      );
+    }
+  };
 
   return (
     <TouchableWithoutFeedback
@@ -88,7 +120,7 @@ const Home = ({navigation}) => {
         <Background />
         <Text style={[styles.title]}>{'Decidr'}</Text>
 
-        <TextButton text={'Host Room'} onPress={hostRoom} />
+        {hostButton()}
         <View style={styles.rowContainer}>
           <TextInput
             style={styles.input}
@@ -100,11 +132,7 @@ const Home = ({navigation}) => {
             autoCapitalize={'none'}
             autoCorrect={false}
           />
-          <TextButton
-            text={'Join Room'}
-            styleOverride={{flex: 2}}
-            onPress={joinRoom}
-          />
+          {joinButton()}
         </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
