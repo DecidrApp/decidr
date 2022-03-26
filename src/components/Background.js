@@ -14,6 +14,7 @@ const Background = () => (
 const styles = StyleSheet.create({
   background: {
     position: 'absolute',
+    backgroundColor: '#3c003f',
     left: 0,
     top: 0,
     width: Dimensions.get('window').width,

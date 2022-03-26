@@ -118,7 +118,7 @@ const Home = ({navigation}) => {
       accessible={false}>
       <SafeAreaView style={styles.container}>
         <Background />
-        <Text style={[styles.title]}>{'Decidr'}</Text>
+        <Text style={[styles.title]}>{'decidr'}</Text>
 
         {hostButton()}
         <View style={styles.rowContainer}>
@@ -151,9 +151,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   title: {
-    fontSize: 64,
+    fontSize: 100,
     fontWeight: '600',
-    fontFamily: 'LeagueGothic-Regular',
+    fontFamily: 'LondrinaOutline-Regular',
     textAlign: 'center',
     marginBottom: 30,
     color: COLORS.WHITE,

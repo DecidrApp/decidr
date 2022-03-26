@@ -15,14 +15,15 @@ const TextButton = ({text, onPress, styleOverride = {}}) => (
 const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
-    backgroundColor: COLORS.PRIMARY,
+    backgroundColor: "#330033AA",
     paddingTop: 10,
     paddingBottom: 10,
     paddingLeft: 20,
     paddingRight: 20,
-    borderRadius: 10,
-    borderColor: COLORS.PRIMARY_DARK,
-    borderBottomWidth: 2,
+    borderRadius: 5,
+    borderColor: "#FFFFFF",
+    borderWidth:1,
+    borderBottomWidth: 8,
   },
   buttonText: {
     fontSize: 32,
