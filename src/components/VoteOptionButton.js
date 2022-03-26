@@ -21,10 +21,12 @@ const VoteOptionButton = ({option, onPress, styleOverride = {}}) => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: COLORS.SECONDARY_DARK,
+    backgroundColor: COLORS.PRIMARY,
     padding: 10,
     marginBottom: 10,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.WHITE,
   },
   buttonText: {
     fontFamily: 'LeagueGothic-Regular',

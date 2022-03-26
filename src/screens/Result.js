@@ -84,7 +84,7 @@ const Result = ({navigation}) => {
     if (cleanUrl) {
       return (
         <TextButton
-          text="Go to Restaurant in SkipTheDishes ↗"
+          text="Open in SkipTheDishes ↗"
           onPress={() => {
             const urlToOpen = 'https://skipthedishes.com/' + cleanUrl;
 
@@ -134,8 +134,8 @@ const styles = StyleSheet.create({
   background: {
     height: '100%',
     paddingTop: '40%',
-    paddingLeft: '10%',
-    paddingRight: '10%',
+    paddingLeft: '12%',
+    paddingRight: '12%',
     backgroundColor: COLORS.BACKGROUND,
   },
   result: {
@@ -143,13 +143,12 @@ const styles = StyleSheet.create({
     fontSize: 64,
     fontWeight: '600',
     textAlign: 'center',
+    paddingBottom: 20,
     color: COLORS.WHITE,
   },
   buttonContainer: {
     position: 'absolute',
     alignSelf: 'center',
-    paddingLeft: 5,
-    paddingRight: 5,
     bottom: '5%',
     width: '100%',
   },
