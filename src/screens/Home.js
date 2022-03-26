@@ -127,8 +127,8 @@ const Home = ({navigation}) => {
             onChangeText={setRoomCode}
             value={roomCode}
             textAlign={'left'}
-            placeholder={'Room Code'}
-            placeholderTextColor={COLORS.SECONDARY_LIGHT}
+            placeholder={'> Room Code'}
+            placeholderTextColor={COLORS.OFF_WHITE}
             autoCapitalize={'none'}
             autoCorrect={false}
           />
@@ -159,15 +159,17 @@ const styles = StyleSheet.create({
     color: COLORS.WHITE,
   },
   input: {
-    flex: 1,
+    flex: 1.5,
     paddingLeft: 10,
     paddingRight: 10,
     textTransform: 'lowercase',
     fontFamily: 'LeagueGothic-Regular',
-    fontSize: 25,
-    color: COLORS.BLACK,
-    borderRadius: 10,
-    backgroundColor: COLORS.WHITE,
+    fontSize: 28,
+    color: COLORS.WHITE,
+    borderRadius: 8,
+    borderColor: COLORS.WHITE,
+    borderWidth: 1,
+    backgroundColor: COLORS.PRIMARY,
     marginRight: 5,
   },
 });

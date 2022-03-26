@@ -1,4 +1,5 @@
 import {Dimensions} from 'react-native';
+import COLORS from '../styles/colors';
 
 const {ImageBackground, StyleSheet} = require('react-native');
 const React = require('react');
@@ -14,7 +15,7 @@ const Background = () => (
 const styles = StyleSheet.create({
   background: {
     position: 'absolute',
-    backgroundColor: '#3c003f',
+    backgroundColor: COLORS.BACKGROUND,
     left: 0,
     top: 0,
     width: Dimensions.get('window').width,

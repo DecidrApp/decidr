@@ -28,9 +28,10 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 20,
     paddingRight: 20,
-    borderRadius: 10,
-    borderColor: COLORS.PRIMARY_DARK,
-    borderBottomWidth: 2,
+    borderRadius: 5,
+    borderColor: COLORS.WHITE,
+    borderWidth: 1,
+    borderBottomWidth: 8,
   },
   buttonText: {
     marginTop: 6,
