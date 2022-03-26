@@ -24,7 +24,7 @@ const ToggleButton = ({
       }}
       style={[styles.button, styleOverride]}
       activeOpacity={0.95}
-      underlayColor={COLORS.SECONDARY_LIGHT}>
+      underlayColor={COLORS.PRIMARY_DARK}>
       <View style={styles.container}>
         <Text
           style={styles.buttonText}
@@ -42,10 +42,12 @@ const ToggleButton = ({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: COLORS.SECONDARY_DARK,
+    backgroundColor: COLORS.PRIMARY,
     padding: 10,
     marginBottom: 10,
-    borderRadius: 10,
+    borderRadius: 5,
+    borderColor: COLORS.WHITE,
+    borderWidth: 1,
   },
   buttonText: {
     fontFamily: 'LeagueGothic-Regular',

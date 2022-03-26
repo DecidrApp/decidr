@@ -33,7 +33,7 @@ const Suggest = ({navigation}) => {
     if (sessionStore.getState().location_granted) {
       fetchData(lat, long).then(x => {
         // TODO: How many to render? Load on scroll?
-        setRestaurants(x.slice(0, 10));
+        setRestaurants(x.slice(0, 50));
         setLoading(false);
       });
     }
@@ -88,7 +88,7 @@ const Suggest = ({navigation}) => {
           !customOptions.includes(searchTerm) &&
           !restaurantNameExists(searchTerm) && (
             <ToggleButton
-              text={searchTerm}
+              text={'> ' + searchTerm}
               key={searchTerm}
               styleOverride={{marginBottom: 20}}
               onSelect={() => {
@@ -200,9 +200,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: 'LeagueGothic-Regular',
     fontSize: 25,
-    color: COLORS.BLACK,
-    borderRadius: 10,
-    backgroundColor: COLORS.WHITE,
+    color: COLORS.WHITE,
+    borderRadius: 8,
+    borderColor: COLORS.OFF_WHITE,
+    borderWidth: 1,
+    backgroundColor: COLORS.PRIMARY_DARK,
   },
   addContainer: {
     position: 'absolute',

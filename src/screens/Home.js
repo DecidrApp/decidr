@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: COLORS.WHITE,
     borderRadius: 8,
-    borderColor: COLORS.WHITE,
+    borderColor: COLORS.OFF_WHITE,
     borderWidth: 1,
     backgroundColor: COLORS.PRIMARY,
     marginRight: 5,

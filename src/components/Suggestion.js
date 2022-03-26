@@ -11,7 +11,7 @@ const Suggestion = ({text}) => (
 const styles = StyleSheet.create({
   suggestion: {
     alignItems: 'center',
-    backgroundColor: COLORS.SECONDARY,
+    backgroundColor: COLORS.PRIMARY_LIGHT,
     padding: 10,
     marginBottom: 20,
     borderRadius: 10,

@@ -162,7 +162,7 @@ const Room = ({route, navigation}) => {
     for (let i = 0; i < total; i++) {
       icons.push(
         <PersonIcon
-          stroke={i < total - ready ? '#d61a1a' : '#489c11'}
+          stroke={i < total - ready ? COLORS.WHITE : COLORS.READY}
           key={'person-' + i}
           fillOpacity={0}
           width={40}
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingBottom: 6,
+    paddingBottom: 20,
   },
   headerRoomInfo: {
     flexDirection: 'column',
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     paddingTop: '5%',
     marginBottom: -10,
     marginLeft: 12,
-    color: COLORS.SECONDARY_LIGHT,
+    color: COLORS.OFF_WHITE,
   },
   roomCode: {
     fontFamily: 'LeagueGothic-Regular',
