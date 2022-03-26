@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: COLORS.OFF_WHITE,
     borderWidth: 1,
-    backgroundColor: COLORS.PRIMARY_DARK,
+    backgroundColor: COLORS.PRIMARY,
   },
   addContainer: {
     position: 'absolute',

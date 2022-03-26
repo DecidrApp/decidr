@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
     borderColor: COLORS.WHITE,
-    borderWidth: 1,
   },
   buttonText: {
     fontFamily: 'LeagueGothic-Regular',
