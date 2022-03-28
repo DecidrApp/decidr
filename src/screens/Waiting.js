@@ -55,10 +55,6 @@ const Waiting = ({navigation, route}) => {
               ballots,
             );
 
-            if (winner === 'tied') {
-              // TODO: Do something here
-            }
-
             // All users are ready
             updateRoomWinner(roomCode, winner).then(() => {
               updateRoomState(roomCode, 'result');
@@ -91,7 +87,17 @@ const Waiting = ({navigation, route}) => {
         const roomState = data?.value?.data?.onUpdateRoom?.state;
         const winner = data?.value?.data?.onUpdateRoom?.winner;
         if (roomState === 'result') {
-          sessionStore.dispatch(setWinningVote(winner));
+          const res = winner.split('*');
+          if (res[0] === 'W') {
+            // res[1] => winner name
+            // res[2] => winner votes / total ballots cast
+            sessionStore.dispatch(setWinningVote(res[1]));
+            // TODO: Send proportion as well
+          } else if (res[0] === 'T') {
+            // res[1 ... n] => tied names
+            // TODO: Send to random selection
+          }
+
           navigation.navigate('Result');
         }
       },

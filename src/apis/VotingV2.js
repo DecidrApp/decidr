@@ -1,6 +1,6 @@
 const irv = ballots => {
+  const candidates = [...new Set(ballots.flat())];
   try {
-    const candidates = [...new Set(ballots.flat())];
     const votes = Object.entries(
       ballots.reduce((vL, [v]) => {
         vL[v] += 1;
@@ -16,19 +16,19 @@ const irv = ballots => {
       ['?', Infinity],
     );
 
-    if (topCount === ballots.length / 2 && candidates.length === 2) {
-      return 'tied';
+    if (topCount === ballots.length / candidates.length) {
+      return 'T*' + candidates.join('*');
     }
 
     return topCount > ballots.length / 2
-      ? topCand
+      ? 'W*' + topCand + '*' + topCount / ballots.length
       : irv(
           ballots
             .map(ballot => ballot.filter(c => c !== bottomCand))
             .filter(b => b.length > 0),
         );
   } catch (e) {
-    return 'tied';
+    return 'T*' + candidates.join('*');
   }
 };
 
