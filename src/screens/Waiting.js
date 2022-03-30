@@ -19,6 +19,7 @@ import {
 import {setWinningVote} from '../redux/actions/setWinningVote';
 import Background from '../components/Background';
 import {calculateRanking} from '../apis/VotingV2';
+import {setWinnerProportion} from '../redux/actions/setWinnerProportion';
 
 const Waiting = ({navigation, route}) => {
   const [roomCode] = useState(sessionStore.getState().room_id);
@@ -92,12 +93,20 @@ const Waiting = ({navigation, route}) => {
             // res[1] => winner name
             // res[2] => winner votes / total ballots cast
             sessionStore.dispatch(setWinningVote(res[1]));
-            // TODO: Send proportion as well
+            sessionStore.dispatch(setWinnerProportion(res[2]));
+          } else if (res.length === 2) {
+            sessionStore.dispatch(setWinningVote(res[1]));
+            sessionStore.dispatch(setWinnerProportion(1));
           } else if (res[0] === 'T') {
-            // res[1 ... n] => tied names
-            // TODO: Send to random selection
-          }
+            const tied_between = res.slice(1);
+            // "Randomly" choose winner
+            const winner_index =
+              parseInt(sessionStore.getState().room_id, 10) %
+              tied_between.length;
 
+            sessionStore.dispatch(setWinningVote(tied_between[winner_index]));
+            sessionStore.dispatch(setWinnerProportion(0));
+          }
           navigation.navigate('Result');
         }
       },

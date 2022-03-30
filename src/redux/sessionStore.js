@@ -10,11 +10,13 @@ import {
   SET_ROOM_USER_ID,
   SET_ROOM_USER_STATE,
   SET_BALLOT,
+  SET_WINNER_PROPORTION,
 } from './types';
 
 const initialState = {
   isHost: false,
   winningVote: '',
+  winner_proportion: 0, // 0 for tied, >0 for proportion of votes
   suggestions: [],
   ballot: [],
   location_granted: false,
@@ -86,6 +88,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         ballot: action.payload.slice(),
+      };
+    case SET_WINNER_PROPORTION:
+      return {
+        ...state,
+        winner_proportion: action.payload,
       };
     default:
       return state;
