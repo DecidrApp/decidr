@@ -14,6 +14,8 @@ import Result from './src/screens/Result';
 import Amplify from 'aws-amplify';
 import awsmobile from './aws-exports';
 import Waiting from './src/screens/Waiting';
+import TiedResult from './src/screens/TiedResult';
+import SpinningWheel from './src/screens/SpinningWheel';
 Amplify.configure(awsmobile);
 
 const Stack = createNativeStackNavigator();
