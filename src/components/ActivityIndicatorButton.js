@@ -5,7 +5,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 
 const TextButton = ({onPress, styleOverride = {}}) => (
   <TouchableHighlight

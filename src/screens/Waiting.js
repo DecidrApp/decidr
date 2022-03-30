@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet, Text} from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 import sessionStore from '../redux/sessionStore';
 import {API, graphqlOperation} from 'aws-amplify';
 import {

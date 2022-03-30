@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Text, TouchableHighlight, StyleSheet} from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 
 const TextButton = ({text, onPress, styleOverride = {}}) => {
   const [isBeingHeld, setIsBeingHeld] = useState(false);

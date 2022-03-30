@@ -1,5 +1,5 @@
 import {Dimensions} from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 
 const {ImageBackground, StyleSheet} = require('react-native');
 const React = require('react');

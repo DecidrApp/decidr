@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Text, TouchableHighlight, StyleSheet, View} from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 
 const VoteOptionButton = ({option, onPress, styleOverride = {}}) => {
   return (
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: COLORS.WHITE,
     marginRight: 20,
-  }
+  },
 });
 
 export default VoteOptionButton;

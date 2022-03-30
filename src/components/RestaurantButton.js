@@ -1,11 +1,14 @@
 import React, {useState} from 'react';
 import {Text, TouchableHighlight, StyleSheet, View} from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
+import Tag from './Tag';
 
-const ToggleButton = ({
+const RestaurantButton = ({
   text,
   onSelect,
   onDeselect,
+  specialTags = [],
+  tags = [],
   alreadySelected = false,
   styleOverride = {},
 }) => {
@@ -26,12 +29,24 @@ const ToggleButton = ({
       activeOpacity={0.95}
       underlayColor={COLORS.PRIMARY_DARK}>
       <View style={styles.container}>
-        <Text
-          style={styles.buttonText}
-          numberOfLines={1}
-          ellipsizeMode={'tail'}>
-          {text}
-        </Text>
+        <View style={styles.leftContainer}>
+          <Text
+            style={styles.buttonText}
+            numberOfLines={1}
+            ellipsizeMode={'tail'}>
+            {text}
+          </Text>
+
+          <View style={styles.tagContainer}>
+            {specialTags.map(tag => (
+              <Tag text={tag} color={COLORS.SECONDARY_LIGHT} />
+            ))}
+
+            {tags.map(tag => (
+              <Tag text={tag} />
+            ))}
+          </View>
+        </View>
         <View style={styles.toggle}>
           {isSelected && <View style={styles.toggleOn} />}
         </View>
@@ -59,6 +74,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  leftContainer: {
+    flexDirection: 'column',
+    flex: 1,
+  },
+  tagContainer: {flexDirection: 'row', flexWrap: 'wrap'},
   toggle: {
     borderColor: COLORS.WHITE,
     borderWidth: 2,
@@ -74,4 +94,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ToggleButton;
+export default RestaurantButton;

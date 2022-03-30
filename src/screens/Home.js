@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import TextButton from '../components/TextButton';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 import {setIsHost} from '../redux/actions/setIsHost';
 import sessionStore from '../redux/sessionStore';
 import {setRoomId} from '../redux/actions/setRoomId';

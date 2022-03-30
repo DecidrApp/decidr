@@ -35,7 +35,7 @@ function callApi(latitude, longitude, search) {
           distance:
             x?.distance?.unit === 'KM'
               ? x?.distance?.value
-              : x?.distance?.value * 1000,
+              : x?.distance?.value / 1000,
           imageUrls: x?.imageUrls,
           cleanUrl: x?.cleanUrl,
         };

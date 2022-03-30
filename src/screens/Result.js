@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import TextButton from '../components/TextButton';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 import sessionStore from '../redux/sessionStore';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
 import {API, graphqlOperation} from 'aws-amplify';

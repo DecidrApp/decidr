@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 import TextButton from '../components/TextButton';
 import Suggestion from '../components/Suggestion';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 import sessionStore from '../redux/sessionStore';
 import {useIsFocused} from '@react-navigation/native';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
@@ -165,8 +165,8 @@ const Room = ({route, navigation}) => {
           stroke={i < total - ready ? COLORS.WHITE : COLORS.READY}
           key={'person-' + i}
           fillOpacity={0}
-          width={40}
-          height={40}
+          width={35}
+          height={35}
         />,
       );
     }
@@ -212,8 +212,12 @@ const Room = ({route, navigation}) => {
             <Text style={[styles.roomCodeTitle]}>{'ROOM CODE'}</Text>
             <Text style={[styles.roomCode]}>{roomCode}</Text>
           </View>
-          <View style={[styles.headerParticipants]}>
-            {createPeopleIcons(numParticipants, numReady)}
+          <View style={styles.headerParticipants}>
+            <Text style={[styles.participantsTitle]}>{'PARTICIPANTS'}</Text>
+            <View style={[styles.participantsList]}>
+              {createPeopleIcons(1, 0)}
+            </View>
+
           </View>
         </View>
 
@@ -250,8 +254,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexGrow: 1,
-    paddingLeft: '10%',
-    paddingRight: '10%',
+    paddingLeft: '5%',
+    paddingRight: '5%',
     backgroundColor: COLORS.BACKGROUND,
   },
   header: {
@@ -263,22 +267,24 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   headerParticipants: {
-    flexGrow: 1,
-    marginTop: 18,
+    flexDirection: 'column',
+  },
+  participantsList: {
     marginRight: 6,
-    maxWidth: '60%',
     flexDirection: 'row',
-    alignContent: 'center',
+    alignSelf: 'flex-end',
+    alignContent: 'flex-end',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
     flexWrap: 'wrap',
-    justifyContent: 'space-around',
+    maxWidth: 160,
   },
   roomCodeTitle: {
     fontFamily: 'LeagueGothic-Regular',
     fontSize: 24,
     fontWeight: '600',
     textAlign: 'left',
-    paddingTop: '5%',
-    marginBottom: -10,
+    paddingTop: 20,
     marginLeft: 12,
     color: COLORS.OFF_WHITE,
   },
@@ -288,8 +294,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'left',
     paddingTop: '5%',
+    marginTop: -10,
     marginLeft: 12,
     color: COLORS.WHITE,
+  },
+  participantsTitle: {
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 24,
+    fontWeight: '600',
+    textAlign: 'right',
+    paddingTop: 20,
+    marginRight: 12,
+    color: COLORS.OFF_WHITE,
   },
   participants: {
     fontFamily: 'LeagueGothic-Regular',
