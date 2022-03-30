@@ -26,6 +26,7 @@ const Suggest = ({navigation}) => {
   const [numSelected, setNumSelected] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [tagFilter, setTagFilter] = useState('');
 
   const fetchRestaurants = () => {
     const long = sessionStore.getState().longitude;
@@ -34,7 +35,9 @@ const Suggest = ({navigation}) => {
     if (sessionStore.getState().location_granted) {
       fetchData(lat, long).then(x => {
         // TODO: How many to render? Load on scroll?
-        setRestaurants(x.slice(0, 50).sort((a, b) => (a.distance > b.distance) ? 1 : -1));
+        setRestaurants(
+          x.slice(0, 50).sort((a, b) => (a.distance > b.distance ? 1 : -1)),
+        );
         setLoading(false);
       });
     }

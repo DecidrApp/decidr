@@ -215,7 +215,7 @@ const Room = ({route, navigation}) => {
           <View style={styles.headerParticipants}>
             <Text style={[styles.participantsTitle]}>{'PARTICIPANTS'}</Text>
             <View style={[styles.participantsList]}>
-              {createPeopleIcons(1, 0)}
+              {createPeopleIcons(numParticipants, numReady)}
             </View>
 
           </View>
