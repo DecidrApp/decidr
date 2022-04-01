@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet, Text} from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 import sessionStore from '../redux/sessionStore';
 import {API, graphqlOperation} from 'aws-amplify';
 import {
@@ -19,6 +19,7 @@ import {
 import {setWinningVote} from '../redux/actions/setWinningVote';
 import Background from '../components/Background';
 import {calculateRanking} from '../apis/VotingV2';
+import {setWinnerProportion} from '../redux/actions/setWinnerProportion';
 
 const Waiting = ({navigation, route}) => {
   const [roomCode] = useState(sessionStore.getState().room_id);
@@ -55,10 +56,6 @@ const Waiting = ({navigation, route}) => {
               ballots,
             );
 
-            if (winner === 'tied') {
-              // TODO: Do something here
-            }
-
             // All users are ready
             updateRoomWinner(roomCode, winner).then(() => {
               updateRoomState(roomCode, 'result');
@@ -91,7 +88,25 @@ const Waiting = ({navigation, route}) => {
         const roomState = data?.value?.data?.onUpdateRoom?.state;
         const winner = data?.value?.data?.onUpdateRoom?.winner;
         if (roomState === 'result') {
-          sessionStore.dispatch(setWinningVote(winner));
+          const res = winner.split('*');
+          if (res[0] === 'W') {
+            // res[1] => winner name
+            // res[2] => winner votes / total ballots cast
+            sessionStore.dispatch(setWinningVote(res[1]));
+            sessionStore.dispatch(setWinnerProportion(res[2]));
+          } else if (res.length === 2) {
+            sessionStore.dispatch(setWinningVote(res[1]));
+            sessionStore.dispatch(setWinnerProportion(1));
+          } else if (res[0] === 'T') {
+            const tied_between = res.slice(1);
+            // "Randomly" choose winner
+            const winner_index =
+              parseInt(sessionStore.getState().room_id, 10) %
+              tied_between.length;
+
+            sessionStore.dispatch(setWinningVote(tied_between[winner_index]));
+            sessionStore.dispatch(setWinnerProportion(0));
+          }
           navigation.navigate('Result');
         }
       },

@@ -9,8 +9,9 @@ import {
   View,
 } from 'react-native';
 import TextButton from '../components/TextButton';
-import COLORS from '../styles/colors';
-import ToggleButton from '../components/ToggleButton';
+import COLORS from '../constants/colors';
+import TAG_WHITELIST from '../constants/tagWhitelist';
+import RestaurantButton from '../components/RestaurantButton';
 import sessionStore from '../redux/sessionStore';
 import {addSuggestions} from '../redux/actions/addSuggestions';
 import {fetchData} from '../apis/SkipTheDishes';
@@ -25,6 +26,7 @@ const Suggest = ({navigation}) => {
   const [numSelected, setNumSelected] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [tagFilter, setTagFilter] = useState('');
 
   const fetchRestaurants = () => {
     const long = sessionStore.getState().longitude;
@@ -33,7 +35,9 @@ const Suggest = ({navigation}) => {
     if (sessionStore.getState().location_granted) {
       fetchData(lat, long).then(x => {
         // TODO: How many to render? Load on scroll?
-        setRestaurants(x.slice(0, 10));
+        setRestaurants(
+          x.slice(0, 50).sort((a, b) => (a.distance > b.distance ? 1 : -1)),
+        );
         setLoading(false);
       });
     }
@@ -82,14 +86,13 @@ const Suggest = ({navigation}) => {
           autoCorrect={false}
         />
 
-        {loading && <ActivityIndicator size={'large'} color={COLORS.WHITE} />}
-
         {searchTerm !== '' &&
           !customOptions.includes(searchTerm) &&
           !restaurantNameExists(searchTerm) && (
-            <ToggleButton
+            <RestaurantButton
               text={searchTerm}
               key={searchTerm}
+              specialTags={['Custom']}
               styleOverride={{marginBottom: 20}}
               onSelect={() => {
                 setCustomOptions([...customOptions, searchTerm]);
@@ -108,9 +111,10 @@ const Suggest = ({navigation}) => {
             return null;
           }
           return (
-            <ToggleButton
+            <RestaurantButton
               text={option}
               key={option}
+              specialTags={['Custom']}
               onSelect={() => {
                 suggestionSelected({
                   name: option,
@@ -124,6 +128,9 @@ const Suggest = ({navigation}) => {
           );
         })}
 
+        <Text style={styles.resultsDisclaimer}>Results from SkipTheDishes</Text>
+        {loading && <ActivityIndicator size={'large'} color={COLORS.WHITE} />}
+
         {restaurants.map(restaurant => {
           if (
             !restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -131,9 +138,13 @@ const Suggest = ({navigation}) => {
             return null;
           }
           return (
-            <ToggleButton
+            <RestaurantButton
               text={restaurant.name}
               key={restaurant.id}
+              specialTags={[Math.round(restaurant.distance * 10) / 10 + 'km']}
+              tags={restaurant.tags.filter(text =>
+                TAG_WHITELIST.includes(text),
+              )}
               onSelect={() => {
                 suggestionSelected({
                   name: restaurant.name,
@@ -193,6 +204,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: COLORS.WHITE,
   },
+  resultsDisclaimer: {
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 30,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 5,
+    color: COLORS.WHITE,
+  },
   input: {
     flex: 1,
     paddingLeft: 10,
@@ -200,9 +219,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: 'LeagueGothic-Regular',
     fontSize: 25,
-    color: COLORS.BLACK,
-    borderRadius: 10,
-    backgroundColor: COLORS.WHITE,
+    color: COLORS.WHITE,
+    borderRadius: 8,
+    borderColor: COLORS.WHITE,
+    borderWidth: 1,
+    backgroundColor: COLORS.PRIMARY,
   },
   addContainer: {
     position: 'absolute',

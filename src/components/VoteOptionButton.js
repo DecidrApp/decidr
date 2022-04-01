@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Text, TouchableHighlight, StyleSheet, View} from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 
 const VoteOptionButton = ({option, onPress, styleOverride = {}}) => {
   return (
@@ -21,10 +21,12 @@ const VoteOptionButton = ({option, onPress, styleOverride = {}}) => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: COLORS.SECONDARY_DARK,
+    backgroundColor: COLORS.PRIMARY,
     padding: 10,
     marginBottom: 10,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.WHITE,
   },
   buttonText: {
     fontFamily: 'LeagueGothic-Regular',
@@ -32,7 +34,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: COLORS.WHITE,
     marginRight: 20,
-  }
+  },
 });
 
 export default VoteOptionButton;

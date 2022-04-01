@@ -1,11 +1,14 @@
 import React, {useState} from 'react';
 import {Text, TouchableHighlight, StyleSheet, View} from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
+import Tag from './Tag';
 
-const ToggleButton = ({
+const RestaurantButton = ({
   text,
   onSelect,
   onDeselect,
+  specialTags = [],
+  tags = [],
   alreadySelected = false,
   styleOverride = {},
 }) => {
@@ -24,14 +27,26 @@ const ToggleButton = ({
       }}
       style={[styles.button, styleOverride]}
       activeOpacity={0.95}
-      underlayColor={COLORS.SECONDARY_LIGHT}>
+      underlayColor={COLORS.PRIMARY_DARK}>
       <View style={styles.container}>
-        <Text
-          style={styles.buttonText}
-          numberOfLines={1}
-          ellipsizeMode={'tail'}>
-          {text}
-        </Text>
+        <View style={styles.leftContainer}>
+          <Text
+            style={styles.buttonText}
+            numberOfLines={1}
+            ellipsizeMode={'tail'}>
+            {text}
+          </Text>
+
+          <View style={styles.tagContainer}>
+            {specialTags.map(tag => (
+              <Tag text={tag} color={COLORS.SECONDARY_LIGHT} />
+            ))}
+
+            {tags.map(tag => (
+              <Tag text={tag} />
+            ))}
+          </View>
+        </View>
         <View style={styles.toggle}>
           {isSelected && <View style={styles.toggleOn} />}
         </View>
@@ -42,10 +57,11 @@ const ToggleButton = ({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: COLORS.SECONDARY_DARK,
+    backgroundColor: COLORS.PRIMARY,
     padding: 10,
     marginBottom: 10,
-    borderRadius: 10,
+    borderRadius: 5,
+    borderColor: COLORS.WHITE,
   },
   buttonText: {
     fontFamily: 'LeagueGothic-Regular',
@@ -58,6 +74,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  leftContainer: {
+    flexDirection: 'column',
+    flex: 1,
+  },
+  tagContainer: {flexDirection: 'row', flexWrap: 'wrap'},
   toggle: {
     borderColor: COLORS.WHITE,
     borderWidth: 2,
@@ -73,4 +94,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ToggleButton;
+export default RestaurantButton;

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 import TextButton from '../components/TextButton';
 import Suggestion from '../components/Suggestion';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 import sessionStore from '../redux/sessionStore';
 import {useIsFocused} from '@react-navigation/native';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
@@ -25,6 +25,8 @@ import {
   updateRoomUserState,
 } from '../apis/AppSync';
 import Background from '../components/Background';
+import PersonIcon from '../assets/images/person.svg';
+import ActivityIndicatorButton from '../components/ActivityIndicatorButton';
 
 const Room = ({route, navigation}) => {
   // Setup States
@@ -39,6 +41,8 @@ const Room = ({route, navigation}) => {
   const [numParticipants, setNumParticipants] = useState(
     route.params?.initialParticipants ?? 1,
   );
+  const [numReady, setNumReady] = useState(0);
+  const [readyLoading, setReadyLoading] = useState(false);
   const isFocused = useIsFocused(); // Force re-render
 
   function closeLeaveRoom() {
@@ -65,8 +69,10 @@ const Room = ({route, navigation}) => {
     // Helper function for when users join or leave
     const updateUsers = () => {
       getAllUsersForRoom(roomCode).then(r => {
+        setReadyLoading(false);
         const users = r ?? [];
         setNumParticipants(users.length);
+        setNumReady(users.filter(a => a.state === 'ready').length);
         if (
           sessionStore.getState().isHost &&
           !users.some(a => a?.state !== 'ready')
@@ -151,6 +157,49 @@ const Room = ({route, navigation}) => {
     };
   }, [roomCode, navigation, userId]);
 
+  const createPeopleIcons = (total, ready) => {
+    let icons = [];
+    for (let i = 0; i < total; i++) {
+      icons.push(
+        <PersonIcon
+          stroke={i < total - ready ? COLORS.WHITE : COLORS.READY}
+          key={'person-' + i}
+          fillOpacity={0}
+          width={35}
+          height={35}
+        />,
+      );
+    }
+    return icons.reverse();
+  };
+
+  const readyButton = () => {
+    if (!readyLoading) {
+      return (
+        <TextButton
+          text={userState === 'suggesting' ? 'Ready' : 'Unready'}
+          styleOverride={{flex: 1, marginLeft: 5}}
+          onPress={() => {
+            setReadyLoading(true);
+            if (userState === 'suggesting') {
+              setNumReady(numReady + 1);
+              updateRoomUserState(userId, 'ready');
+              setUserState('ready');
+            } else {
+              setNumReady(numReady - 1);
+              updateRoomUserState(userId, 'suggesting');
+              setUserState('suggesting');
+            }
+          }}
+        />
+      );
+    } else {
+      return (
+        <ActivityIndicatorButton styleOverride={{flex: 1, marginLeft: 5}} />
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container]}>
       <Background />
@@ -158,10 +207,19 @@ const Room = ({route, navigation}) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
-        <Text style={[styles.roomCode]}>{'Room Code: ' + roomCode}</Text>
-        <Text style={[styles.participants]}>
-          {String(numParticipants) + ' participants'}
-        </Text>
+        <View style={[styles.header]}>
+          <View style={[styles.headerRoomInfo]}>
+            <Text style={[styles.roomCodeTitle]}>{'ROOM CODE'}</Text>
+            <Text style={[styles.roomCode]}>{roomCode}</Text>
+          </View>
+          <View style={styles.headerParticipants}>
+            <Text style={[styles.participantsTitle]}>{'PARTICIPANTS'}</Text>
+            <View style={[styles.participantsList]}>
+              {createPeopleIcons(numParticipants, numReady)}
+            </View>
+
+          </View>
+        </View>
 
         {suggestions.map(suggestion => (
           <Suggestion text={suggestion?.name} key={suggestion?.name} />
@@ -180,19 +238,7 @@ const Room = ({route, navigation}) => {
             }}
           />
 
-          <TextButton
-            text={userState === 'suggesting' ? 'Ready' : 'Unready'}
-            styleOverride={{flex: 1, marginLeft: 5}}
-            onPress={() => {
-              if (userState === 'suggesting') {
-                updateRoomUserState(userId, 'ready');
-                setUserState('ready');
-              } else {
-                updateRoomUserState(userId, 'suggesting');
-                setUserState('suggesting');
-              }
-            }}
-          />
+          {readyButton()}
         </View>
 
         <TextButton
@@ -208,17 +254,58 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexGrow: 1,
-    paddingLeft: '10%',
-    paddingRight: '10%',
+    paddingLeft: '5%',
+    paddingRight: '5%',
     backgroundColor: COLORS.BACKGROUND,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 20,
+  },
+  headerRoomInfo: {
+    flexDirection: 'column',
+  },
+  headerParticipants: {
+    flexDirection: 'column',
+  },
+  participantsList: {
+    marginRight: 6,
+    flexDirection: 'row',
+    alignSelf: 'flex-end',
+    alignContent: 'flex-end',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    flexWrap: 'wrap',
+    maxWidth: 160,
+  },
+  roomCodeTitle: {
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 24,
+    fontWeight: '600',
+    textAlign: 'left',
+    paddingTop: 20,
+    marginLeft: 12,
+    color: COLORS.OFF_WHITE,
   },
   roomCode: {
     fontFamily: 'LeagueGothic-Regular',
-    fontSize: 48,
+    fontSize: 60,
     fontWeight: '600',
-    textAlign: 'center',
+    textAlign: 'left',
     paddingTop: '5%',
+    marginTop: -10,
+    marginLeft: 12,
     color: COLORS.WHITE,
+  },
+  participantsTitle: {
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 24,
+    fontWeight: '600',
+    textAlign: 'right',
+    paddingTop: 20,
+    marginRight: 12,
+    color: COLORS.OFF_WHITE,
   },
   participants: {
     fontFamily: 'LeagueGothic-Regular',

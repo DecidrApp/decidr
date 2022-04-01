@@ -1,31 +1,35 @@
 const irv = ballots => {
   const candidates = [...new Set(ballots.flat())];
-  const votes = Object.entries(
-    ballots.reduce((vL, [v]) => {
-      vL[v] += 1;
-      return vL;
-    }, Object.assign(...candidates.map(c => ({[c]: 0})))),
-  );
-  const [topCand, topCount] = votes.reduce(
-    ([n, m], [v, c]) => (c > m ? [v, c] : [n, m]),
-    ['?', -Infinity],
-  );
-  const [bottomCand, bottomCount] = votes.reduce(
-    ([n, m], [v, c]) => (c < m ? [v, c] : [n, m]),
-    ['?', Infinity],
-  );
+  try {
+    const votes = Object.entries(
+      ballots.reduce((vL, [v]) => {
+        vL[v] += 1;
+        return vL;
+      }, Object.assign(...candidates.map(c => ({[c]: 0})))),
+    );
+    const [topCand, topCount] = votes.reduce(
+      ([n, m], [v, c]) => (c > m ? [v, c] : [n, m]),
+      ['?', -Infinity],
+    );
+    const [bottomCand, bottomCount] = votes.reduce(
+      ([n, m], [v, c]) => (c < m ? [v, c] : [n, m]),
+      ['?', Infinity],
+    );
 
-  if (topCount === ballots.length / 2 && candidates.length === 2) {
-    return 'tied';
+    if (topCount === ballots.length / candidates.length) {
+      return 'T*' + candidates.join('*');
+    }
+
+    return topCount > ballots.length / 2
+      ? 'W*' + topCand + '*' + topCount / ballots.length
+      : irv(
+          ballots
+            .map(ballot => ballot.filter(c => c !== bottomCand))
+            .filter(b => b.length > 0),
+        );
+  } catch (e) {
+    return 'T*' + candidates.join('*');
   }
-
-  return topCount > ballots.length / 2
-    ? topCand
-    : irv(
-        ballots
-          .map(ballot => ballot.filter(c => c !== bottomCand))
-          .filter(b => b.length > 0),
-      );
 };
 
 function calculateRanking(options, ballots) {

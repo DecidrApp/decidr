@@ -1,7 +1,14 @@
-import React, {useEffect} from 'react';
-import {Linking, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  Linking,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import TextButton from '../components/TextButton';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 import sessionStore from '../redux/sessionStore';
 import {resetSuggestions} from '../redux/actions/resetSuggestions';
 import {API, graphqlOperation} from 'aws-amplify';
@@ -17,6 +24,8 @@ import {resetRoom} from '../redux/actions/resetRoom';
 import Background from '../components/Background';
 
 const Result = ({navigation}) => {
+  const [tallying, setTallying] = useState(true);
+
   function closeLeaveRoom() {
     // If user is the host, close the room
     removeRoomUser(sessionStore.getState().user_id);
@@ -74,6 +83,25 @@ const Result = ({navigation}) => {
     };
   }, [navigation]);
 
+  useEffect(() => {
+    const sleep = ms => {
+      return new Promise(resolve => {
+        setTimeout(resolve, ms);
+      });
+    };
+
+    let isMounted = true;
+    sleep(1000).then(() => {
+      if (!isMounted) {
+        return;
+      }
+      setTallying(false);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   function showSkipButton() {
     const cleanUrl = sessionStore
       .getState()
@@ -84,7 +112,7 @@ const Result = ({navigation}) => {
     if (cleanUrl) {
       return (
         <TextButton
-          text="Go to Restaurant in SkipTheDishes ↗"
+          text="Open in SkipTheDishes ↗"
           onPress={() => {
             const urlToOpen = 'https://skipthedishes.com/' + cleanUrl;
 
@@ -101,31 +129,57 @@ const Result = ({navigation}) => {
     }
   }
 
+  const getWaitingText = () => {
+    if (sessionStore.getState().winner_proportion === 0) {
+      // Tied
+      return 'Breaking a tie...';
+    } else {
+      return 'Tallying votes...';
+    }
+  };
+
+  const getWinnerText = () => {
+    if (sessionStore.getState().winner_proportion === 0) {
+      // Tied
+      return 'The tie-breaker is';
+    } else {
+      return 'The winning vote is';
+    }
+  };
+
   return (
     <SafeAreaView style={styles.background}>
       <Background />
 
-      <Text style={styles.result}>{sessionStore.getState().winningVote}</Text>
+      {tallying && <Text style={styles.waitingText}>{getWaitingText()}</Text>}
+      {tallying && <ActivityIndicator size={'large'} color={COLORS.WHITE} />}
 
-      {showSkipButton()}
+      {!tallying && <Text style={styles.winnerText}>{getWinnerText()}</Text>}
+      {!tallying && (
+        <Text style={styles.result}>{sessionStore.getState().winningVote}</Text>
+      )}
 
-      <View style={styles.buttonContainer}>
-        {sessionStore.getState().isHost && (
+      {!tallying && showSkipButton()}
+
+      {!tallying && (
+        <View style={styles.buttonContainer}>
+          {sessionStore.getState().isHost && (
+            <TextButton
+              text={'Return all to Room'}
+              styleOverride={{marginBottom: 10}}
+              onPress={() => {
+                updateRoomState(sessionStore.getState().room_id, 'open');
+                deleteAllBallots(sessionStore.getState().room_id);
+              }}
+            />
+          )}
+
           <TextButton
-            text={'Return all to Room'}
-            styleOverride={{marginBottom: 10}}
-            onPress={() => {
-              updateRoomState(sessionStore.getState().room_id, 'open');
-              deleteAllBallots(sessionStore.getState().room_id);
-            }}
+            text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
+            onPress={closeLeaveRoom}
           />
-        )}
-
-        <TextButton
-          text={sessionStore.getState().isHost ? 'Close Room' : 'Leave Room'}
-          onPress={closeLeaveRoom}
-        />
-      </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -133,9 +187,9 @@ const Result = ({navigation}) => {
 const styles = StyleSheet.create({
   background: {
     height: '100%',
-    paddingTop: '40%',
-    paddingLeft: '10%',
-    paddingRight: '10%',
+    paddingTop: '15%',
+    paddingLeft: '12%',
+    paddingRight: '12%',
     backgroundColor: COLORS.BACKGROUND,
   },
   result: {
@@ -143,13 +197,28 @@ const styles = StyleSheet.create({
     fontSize: 64,
     fontWeight: '600',
     textAlign: 'center',
+    paddingBottom: 30,
+    color: COLORS.WHITE,
+  },
+  waitingText: {
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 60,
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingBottom: 40,
+    color: COLORS.WHITE,
+  },
+  winnerText: {
+    fontFamily: 'LeagueGothic-Regular',
+    fontSize: 40,
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingBottom: 60,
     color: COLORS.WHITE,
   },
   buttonContainer: {
     position: 'absolute',
     alignSelf: 'center',
-    paddingLeft: 5,
-    paddingRight: 5,
     bottom: '5%',
     width: '100%',
   },

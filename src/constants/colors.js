@@ -1,11 +1,13 @@
-const PRIMARY = '#7B1FA2';
-const PRIMARY_LIGHT = '#ae52d4';
-const PRIMARY_DARK = '#4a0072';
-const SECONDARY = '#342e36';
+const PRIMARY = '#330033';
+const PRIMARY_LIGHT = '#8a4189';
+const PRIMARY_DARK = '#280028';
+const SECONDARY = '#ce7332';
 const SECONDARY_LIGHT = '#766b7c';
 const SECONDARY_DARK = '#403944';
-const BACKGROUND = '#26252c';
+const BACKGROUND = '#3c003f';
+const READY = '#e3a3ff';
 const WHITE = '#FFFFFF';
+const OFF_WHITE = '#CCCCCC';
 const BLACK = '#000000';
 
 const COLORS = {
@@ -17,7 +19,9 @@ const COLORS = {
   SECONDARY_DARK,
   BACKGROUND,
   BLACK,
+  READY,
   WHITE,
+  OFF_WHITE,
 };
 
 export default COLORS;

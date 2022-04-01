@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, StyleSheet, View} from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 
 const Suggestion = ({text}) => (
   <View style={styles.suggestion}>
@@ -11,7 +11,7 @@ const Suggestion = ({text}) => (
 const styles = StyleSheet.create({
   suggestion: {
     alignItems: 'center',
-    backgroundColor: COLORS.SECONDARY,
+    backgroundColor: COLORS.PRIMARY_LIGHT,
     padding: 10,
     marginBottom: 20,
     borderRadius: 10,

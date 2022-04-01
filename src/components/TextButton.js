@@ -1,16 +1,27 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Text, TouchableHighlight, StyleSheet} from 'react-native';
-import COLORS from '../styles/colors';
+import COLORS from '../constants/colors';
 
-const TextButton = ({text, onPress, styleOverride = {}}) => (
-  <TouchableHighlight
-    onPress={onPress}
-    style={[styles.button, styleOverride]}
-    activeOpacity={0.95}
-    underlayColor={COLORS.PRIMARY_LIGHT}>
-    <Text style={styles.buttonText}>{text}</Text>
-  </TouchableHighlight>
-);
+const TextButton = ({text, onPress, styleOverride = {}}) => {
+  const [isBeingHeld, setIsBeingHeld] = useState(false);
+
+  return (
+    <TouchableHighlight
+      onPress={onPress}
+      style={[
+        styles.button,
+        isBeingHeld ? styles.held : styles.notHeld,
+        styleOverride,
+      ]}
+
+      activeOpacity={0.95}
+      onShowUnderlay={() => setIsBeingHeld(true)}
+      onHideUnderlay={() => setIsBeingHeld(false)}
+      underlayColor={COLORS.PRIMARY_DARK}>
+      <Text style={styles.buttonText}>{text}</Text>
+    </TouchableHighlight>
+  );
+};
 
 const styles = StyleSheet.create({
   button: {
@@ -20,9 +31,15 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 20,
     paddingRight: 20,
-    borderRadius: 10,
-    borderColor: COLORS.PRIMARY_DARK,
-    borderBottomWidth: 2,
+    borderRadius: 5,
+    borderColor: COLORS.WHITE,
+    borderWidth: 1,
+  },
+  notHeld: {
+    borderBottomWidth: 8,
+  },
+  held: {
+    borderTopWidth: 8,
   },
   buttonText: {
     fontSize: 32,
