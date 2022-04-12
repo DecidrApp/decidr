@@ -3,7 +3,7 @@ A mobile application to help users make a group decision on what food to order f
 
 The product page, where you can get the APK, can be found here: https://decidrapp.github.io/  
 
-This is a project for SENG 485A by Joe Zlonicky and Davis Carlson.
+This is a project for CSC 485A by Joe Zlonicky and Davis Carlson.
 
 ## Resources
 [Milestone slides](https://github.com/DecidrApp/decidr/wiki/Milestone-Presentations)  
