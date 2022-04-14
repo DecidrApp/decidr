@@ -7,7 +7,7 @@ This is a project for CSC 485A by Joe Zlonicky and Davis Carlson.
 
 ## Resources
 [Milestone slides](https://github.com/DecidrApp/decidr/wiki/Milestone-Presentations)  
-[Final Submission Demo](https://www.youtube.com/watch?v=-NT-joCDf60)
+[Final Submission Demo](https://www.youtube.com/watch?v=-NT-joCDf60)  
 [Usage](https://github.com/DecidrApp/decidr/wiki/Usage)  
 [Installation](https://github.com/DecidrApp/decidr/wiki/Installation)  
 [Building the app](https://github.com/DecidrApp/decidr/wiki/Building)  
